@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arena de Gladiadores</title>
+    <style>
+        #log {
+            height: 30vh;
+            overflow-y: auto;
+            background-color: #f0f0f0;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        body {
+            margin: 50px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        canvas {
+            background-color: #f0f0f0;
+            display: block;
+            margin: 0 auto;
+            width: 90vw;
+        }
+        button {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            font-size: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #000;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e0e0e0;
+        }
+        h1 {
+            text-align: center;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Arena de Gladiadores</h1>
+    <canvas id="canvas" width="900" height="600"></canvas>
+    <button id="start">Comenzar</button>
+    <div id="log"></div>
+    <script src="js/index.js"></script>
+</body>
+</html>
