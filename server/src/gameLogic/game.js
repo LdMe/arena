@@ -1,5 +1,5 @@
 import { Player } from './player.js';
-import { MAX_EXECUTION_TIME, PLAYER_TIMEOUT, TURN_TIMEOUT } from './constants.js';
+import { MAX_EXECUTION_TIME, PLAYER_TIMEOUT } from './constants.js';
 
 class Game {
   constructor(players, log) {
@@ -121,8 +121,7 @@ class Game {
       players: winners
     }
   }
-  async main( updatePlayers) {
-    
+  async main( ) {
     this.log("Comienza la batalla 🏟.");
     const players = this.players;
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -148,8 +147,8 @@ class Game {
           await new Promise(resolve => setTimeout(resolve, PLAYER_TIMEOUT));
           attacker.isTurn = false;
           if (this.ended) break;
+          
         }
-        updatePlayers(this.getAlivePlayers(players));
       }
       if (this.ended) {
         this.log("El juego ha terminado.");
@@ -161,7 +160,11 @@ class Game {
         const winner = winners[0];
         this.log(`${winner.name} ha vencido a todos sus rivales. Los dioses sonríen ante su hazaña gloriosa. ¡Que las canciones de victoria resuenen en todo el imperio!`);
       }
-      return jugadas;
+      return {
+        status : winners.length > 1 ? "draw" : "win",
+        players: winners,
+        turns: jugadas
+      }
     } catch (err) {
       console.error(err);
     }

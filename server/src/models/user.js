@@ -4,9 +4,10 @@ blocks:Object
 blocks:"[{"id":1720038469006,"conditions":[{"id":1720038470901,"type":"composite","level":0,"target":"self","attribute":"health","operator":"gt","value":50,"logic":"and","leftCondition":{"id":1720038544063,"type":"comparison","level":1,"target":"self","attribute":"health","operator":"gt","value":50},"rightCondition":{"id":1720038544063,"type":"comparison","level":1,"target":"self","attribute":"health","operator":"gt","value":50}}],"action":{"id":1720038469006,"type":"attack","target":"minEnergy"}}]"
 */
 const userSchema = new mongoose.Schema({
-    name: {
+    username: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     email: String,
     blocks: [

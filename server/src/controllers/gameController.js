@@ -9,12 +9,11 @@ const init = (strategy,socket=null) => {
     let log =  (...args) =>console.log(...args);
     if(socket){
         log = (...args) => {
-            console.log(...args);
             socket.emit("log",{log:[...args],players})
         };
     }
     if(strategy.random){
-       players =  createPlayers(log, true, 1);
+       players =  createPlayers(log, true, strategy.numPlayers);
     }
     else{
         players = createPlayers(log);
@@ -31,9 +30,11 @@ const init = (strategy,socket=null) => {
             newGame.stop();
         })
     }
-    newGame.main((newPlayers )=> {
-        players = newPlayers;
+    const data = newGame.main((newPlayers )=> {
+        // players = newPlayers;
+        // log("new players")
     });
+    console.log("data",data)
     return newGame;
 }
 

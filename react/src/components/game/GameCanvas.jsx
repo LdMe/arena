@@ -17,7 +17,9 @@ const GameCanvas = ({ strategy,socket,log}) => {
         }
         console.log("refreshing")
         socket.on("log", (data) => {
-            console.log("log", data)
+            if(data.log ===""){
+                return
+            }
             log(data.log)
             if(!game){
                 const newGame = new Game(data.players,canvasRef.current);
@@ -26,8 +28,8 @@ const GameCanvas = ({ strategy,socket,log}) => {
             }
             else{
                 game.updatePlayers(data.players);
-                console.log("updating players", data.players)
                 game.draw();
+                game.deleteDeadPlayers();
             }
         })
         return () => {

@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import createSocketServer from './sockets.js';
+import connection from './config/db.js';
 
 const APP_PORT = 3000;
 const app = express();

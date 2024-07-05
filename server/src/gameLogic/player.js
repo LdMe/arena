@@ -44,16 +44,17 @@ export class Player {
         if (this.energy >= ATTACK_ENERGY) {
             this.action = "attack";
             this.energy -= ATTACK_ENERGY;
-            this.log(`👊 ${this.name} ha atacado a ${defender.name}.`);
+            
             if (defender.isDefending) {
-                this.log(`🛡 ${defender.name} ha parado el ataque de ${this.name}.`);
                 defender.isDefending = false;
                 defender.action = "idle";
+                this.log(`🛡 ${defender.name} ha parado el ataque de ${this.name}.`);
                 return;
             }
             defender.health -= ATTACK_DAMAGE;
             defender.health = Math.max(defender.health, 0);
             defender.isHurt = true;
+            this.log(`👊 ${this.name} ha atacado a ${defender.name}.`);
             this.log(`💥 ${defender.name} ha recibido ${ATTACK_DAMAGE} de daño. Vida de ${defender.name}: ${defender.health}.`);
             if (defender.health <= 0) {
                 this.log(`😵 ${defender.name} ha muerto.`);
@@ -87,6 +88,11 @@ export class Player {
     play(enemies) {
         this.isHurt = false;
         this.playStrategy(this, enemies);
+        this.isTurn = false;
+        this.action = "idle";
+        enemies.forEach((enemy) => {
+            enemy.isHurt = false;
+        })
     }
 }
 

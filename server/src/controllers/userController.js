@@ -3,7 +3,7 @@ import user from "../models/user.js";
 const getUserByUsername = async (username) => {
     try{
 
-        return await user.findOne({ name: username });
+        return await user.findOne({ username: username });
     }
     catch(e){
         console.error(e);

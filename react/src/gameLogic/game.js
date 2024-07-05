@@ -10,7 +10,7 @@ class Game {
     this.background.src = "/sprites/background.png";
     this.loaded = false;
     this.background.onload = () => {
-      this.loaded = true;
+      this.draw();
     }
     this.initPlayers();
   }
@@ -75,6 +75,9 @@ class Game {
     });
     console.log("newPlayers", newPlayers);
     this.players = newPlayers;
+  }
+  deleteDeadPlayers = () => {
+    this.players = this.players.filter(player => player.health > 0);
   }
   drawPlayers = () => {
     const ctx = this.ctx;
