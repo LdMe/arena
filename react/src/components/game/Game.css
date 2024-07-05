@@ -1,0 +1,54 @@
+.game {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 100vh; 
+    overflow: hidden; 
+}
+
+.game > article {
+    width: 100%;
+    max-height:80%;
+    box-sizing: border-box;
+}
+
+.game-canvas > canvas {
+    width: 100%;
+    height: auto;
+}
+
+.log {
+    padding: 1rem;
+    height: 40vh; 
+    overflow-y: auto;
+    text-align: start;
+    box-sizing: border-box;
+}
+
+@media screen and (min-width: 1024px),
+screen and (orientation: landscape) {
+    .game > article {
+        width: 45%;
+    }
+    .log{
+        height: 90vh;
+    }
+}
+
+
+.game > .buttons {
+    width: 100%; 
+    padding: 0.5rem;
+    box-sizing: border-box;
+    align-self: flex-end; 
+    margin-top: auto; 
+    display: flex;
+    justify-content: space-around;
+}
+.game > .buttons button {
+    width: calc(50% - 1rem)
+}
