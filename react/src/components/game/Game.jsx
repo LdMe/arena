@@ -88,7 +88,7 @@ const Game = ({ blocks, userData, onEnd }) => {
     }
     return (
         <section className="game">
-            <GameCanvas  strategy={{ username: userData.username, blocks }} socket={socket} log={addLog} />
+            <GameCanvas  strategy={{ username: userData.username, blocks, random: hasRandomPlayers, numPlayers }} socket={socket} log={addLog} />
             <Log log={log} />
             <section className="buttons">
 

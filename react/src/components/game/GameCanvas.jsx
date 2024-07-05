@@ -13,7 +13,7 @@ const GameCanvas = ({ strategy,socket,log}) => {
         }
         if(!started){
             setStarted(true);
-            socket.emit("startGame", { username: strategy.username, blocks: strategy.blocks });
+            socket.emit("startGame",strategy);
         }
         console.log("refreshing")
         socket.on("log", (data) => {

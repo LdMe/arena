@@ -4,7 +4,7 @@ import { generateStrategyCode } from "../utils/strategy.js";
 
 
 const init = (strategy,socket=null) => {
-
+    console.log("strategy", strategy)
     let players = [];
     let log =  (...args) =>console.log(...args);
     if(socket){
