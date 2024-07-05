@@ -1,0 +1,38 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongo_arena
+    restart: always
+    volumes:
+      - ./data:/data/db
+    networks:
+      - arena-network
+      
+    
+  node:
+    build: ./server
+    container_name: arena
+    restart: always
+    ports:
+      - ${APP_PORT}:3000
+    depends_on:
+      - mongo
+    # environment:
+    #   - VIRTUAL_HOST=arena.lafuentedanel.com
+    #   - LETSENCRYPT_HOST=arena.lafuentedanel.com
+    #   - LETSENCRYPT_EMAIL=admin@lafuentedanel.com
+    expose:
+      - "3000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - arena-network
+      # - nginx-proxy
+
+networks:
+  arena-network:
+    name: arena-network
+  # nginx-proxy:
+  #   external: true
+    

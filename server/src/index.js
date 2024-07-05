@@ -1,0 +1,15 @@
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import createSocketServer from './sockets.js';
+
+const APP_PORT = 3000;
+const app = express();
+app.use(cors());
+const server = http.createServer(app);
+
+const io = createSocketServer(server);
+server.listen(APP_PORT, () => {
+    console.log(`Server listening on port ${APP_PORT}`);
+});
+

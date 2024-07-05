@@ -1,7 +1,7 @@
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import GameCanvas from "./GameCanvas"
 import Log from "./Log"
-
+import './Game.css';
 import socket from '../../utils/socket';
 import SocketContext from '../../context/socketContext';
 
@@ -10,12 +10,38 @@ const Game = ({ blocks, userData, onEnd }) => {
     const [hasRandomPlayers, setHasRandomPlayers] = useState(true);
     const [numPlayers, setNumPlayers] = useState(5);
     const [playing, setPlaying] = useState(false);
+    const [game, setGame] = useState(null);
 
     useEffect(() => {
         socket.connect();
         socket.emit("login", { username: userData.username });
-    },[userData])
+        /* socket.emit("startGame", { username: userData.username, blocks: blocks });
+        socket.on("log", (data) => {
+            console.log("log", data)
+        }) */
+        return () => {
+            socket.disconnect();
+        }
+    }, [userData])
+
+    const start =() =>{
+        socket.emit("startGame", { username: strategy.username, blocks: strategy.blocks });
+        socket.on("log", (data) => {
+            console.log("log", data)
+            log(data.log)
+            if(!game){
+                const newGame = new Game(data.players,canvasRef.current);
+                setGame(newGame);
+            }
+            else{
+                game.updatePlayers(data.players);
+                console.log("updating players", data.players)
+                game.draw();
+            }
+        })
+    }
     const addLog = (text) => {
+        if(text === log[log.length-1]) return
         setLog(prevLog => [...prevLog, text]);
     };
     const handlePlayerTypes = (e) => {
@@ -62,7 +88,7 @@ const Game = ({ blocks, userData, onEnd }) => {
     }
     return (
         <section className="game">
-            <GameCanvas log={addLog} strategy={{ name: userData.username, blocks }} randomPlayers={hasRandomPlayers} numPlayers={numPlayers} />
+            <GameCanvas  strategy={{ username: userData.username, blocks }} socket={socket} log={addLog} />
             <Log log={log} />
             <section className="buttons">
 
