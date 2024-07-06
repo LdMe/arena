@@ -3,7 +3,7 @@ import user from "../models/user.js";
 const getUserByUsername = async (username) => {
     try{
 
-        return await user.findOne({ username: username });
+        return await user.findOne({ username });
     }
     catch(e){
         console.error(e);
@@ -23,7 +23,8 @@ const createUser = async (userData) => {
 
 const updateUser = async (username, userData) => {
     try{
-        return await user.updateOne({ name: username }, userData);
+        console.log("userData",userData)
+        return await user.updateOne({ username }, userData);
     }
     catch(e){
         console.error(e);
@@ -33,7 +34,7 @@ const updateUser = async (username, userData) => {
 
 const deleteUser = async (username) => {
     try{
-        return await user.deleteOne({ name: username });
+        return await user.deleteOne({ username });
     }
     catch(e){
         console.error(e);

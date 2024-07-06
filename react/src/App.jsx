@@ -7,6 +7,7 @@ import './App.css'
 import Register from './components/register/Register';
 import Game from './components/game/Game';
 
+import socket from './utils/socket';
 function resetBlock(state,action){
   const defaultBlock = createDefaultBlock();
   const id = action.payload;
@@ -66,13 +67,22 @@ function App() {
   const [playing, setPlaying] = useState(false);
   const [userData, setUserData] = useState({});
   useEffect(() => {
+    socket.connect();
+    
+    return () => {
+        socket.disconnect();
+    }
+}, [userData])
+  useEffect(() => {
     dispatch({ type: 'LOAD_BLOCKS' });
   }, []);
   const addLog = (text) => {
     setLog(prevLog => [...prevLog, text]);
   };
   const handleSubmitUserData = (data) => {
+    console.log("log in")
     setUserData(data);
+    socket.emit("login", { username: data.username });
     setState("builder")
   };
   return (
@@ -82,7 +92,7 @@ function App() {
       )}
       {state === "game" && (
         <>
-          <Game blocks={blocks} userData={userData} onEnd={setState} />
+          <Game blocks={blocks} userData={userData} onEnd={setState} socket={socket}/>
           {/* <GameCanvas log={addLog} strategy={{ name: userData.username, blocks }} />
           <Log log={log} /> */}
         </>

@@ -2,43 +2,17 @@ import { useState, useEffect } from "react"
 import GameCanvas from "./GameCanvas"
 import Log from "./Log"
 import './Game.css';
-import socket from '../../utils/socket';
-import SocketContext from '../../context/socketContext';
 
-const Game = ({ blocks, userData, onEnd }) => {
+const Game = ({ blocks, userData, onEnd, socket}) => {
     const [log, setLog] = useState([]);
     const [hasRandomPlayers, setHasRandomPlayers] = useState(true);
     const [numPlayers, setNumPlayers] = useState(5);
     const [playing, setPlaying] = useState(false);
     const [game, setGame] = useState(null);
 
-    useEffect(() => {
-        socket.connect();
-        socket.emit("login", { username: userData.username });
-        /* socket.emit("startGame", { username: userData.username, blocks: blocks });
-        socket.on("log", (data) => {
-            console.log("log", data)
-        }) */
-        return () => {
-            socket.disconnect();
-        }
-    }, [userData])
 
     const start =() =>{
-        socket.emit("startGame", { username: strategy.username, blocks: strategy.blocks });
-        socket.on("log", (data) => {
-            console.log("log", data)
-            log(data.log)
-            if(!game){
-                const newGame = new Game(data.players,canvasRef.current);
-                setGame(newGame);
-            }
-            else{
-                game.updatePlayers(data.players);
-                console.log("updating players", data.players)
-                game.draw();
-            }
-        })
+        socket.emit("startGame", { username: userData.username, blocks: userData.blocks });
     }
     const addLog = (text) => {
         if(text === log[log.length-1]) return
@@ -54,6 +28,7 @@ const Game = ({ blocks, userData, onEnd }) => {
     const handleStartGame = () => {
         console.log("log", log)
         setLog([]);
+        start();
         setPlaying(true);
     }
     if (!playing) {

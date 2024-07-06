@@ -30,8 +30,6 @@ const createSocketServer = (server) => {
         });
         socket.on('startGame', async (data) => {
             try {
-                console.log("start game")
-                console.log("data:",data)
                 const players = await init(data,socket);
                 console.log("finished",players);
             }

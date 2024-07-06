@@ -11,13 +11,12 @@ function getSprite(index){
 }
 export class Player {
     constructor(name, health, energy, isDefending, playStrategy,  log) {
-        console.log("player",name,log?.toString())
         this.name = name;
         this.health = health;
         this.energy = energy;
         this.isDefending = isDefending;
         this.playStrategy = playStrategy;
-        this.log = log;
+        this.log = log || console.log;
         this.isTurn = false;
         /* console.log("image src",image)
         this.image = new Image();
@@ -27,7 +26,7 @@ export class Player {
 
     }
     static copy(player) {
-        return new Player(player.name, player.health, player.energy, player.isDefending, player.playStrategy, player.image, player.log);
+        return new Player(player.name, player.health, player.energy, player.isDefending, player.playStrategy,  player.log);
     }
     getData() {
         return {

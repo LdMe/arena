@@ -1,13 +1,24 @@
 import { Player } from './player.js';
-import { MAX_EXECUTION_TIME, PLAYER_TIMEOUT } from './constants.js';
+import { MAX_TURNS, PLAYER_TIMEOUT, MAX_ENERGY, MAX_HEALTH } from './constants.js';
 
 class Game {
-  constructor(players, log) {
+  constructor(players = [], log = console.log) {
     this.players = players;
     this.ended = false;
-    this.log = log
+    this.log = log;
+    this.turnsRemaining = MAX_TURNS;
     this.initPlayers();
   }
+
+  setPlayers(players) {
+    this.players = players;
+    this.initPlayers();
+  }
+
+  setLog(log) {
+    this.log = log;
+  }
+
   shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -17,158 +28,191 @@ class Game {
   }
 
   initPlayers() {
-    const newPlayers = this.shuffle(this.players);
-    this.players = newPlayers;
-    return;
-    const screenWidth = this.canvas.width;
-    const screenHeight = this.canvas.height;
-
-    // Calcular el número de columnas y filas basado en la cantidad de jugadores
-    const numPlayers = newPlayers.length;
-    const cols = Math.ceil(Math.sqrt(numPlayers));
-    const rows = Math.ceil(numPlayers / cols);
-
-    // Calcular el tamaño de los jugadores basado en el tamaño del canvas
-    let playerWidth = screenWidth / cols;
-    let playerHeight = screenHeight / rows;
-
-    // hacerlo cuadrado y adaptarlo al menor de los dos
-    if (playerWidth > playerHeight) {
-      playerWidth = playerHeight
-    } else {
-      playerHeight = playerWidth;
-    }
-
-    newPlayers.forEach((player, index) => {
-      console.log("player", player);
-      player.action = "idle";
-
-      const col = index % cols;
-      const row = Math.floor(index / cols);
-
-      // Calcular la posición x e y basada en la columna y fila
-      player.x = (col * screenWidth / cols) + (screenWidth / cols - playerWidth) / 2;
-      player.y = (row * screenHeight / rows) + (screenHeight / rows - playerHeight) / 2;
-      player.width = playerWidth;
-      player.height = playerHeight - 60;
-    });
-
-    this.players = newPlayers;
-    return newPlayers;
+    this.players = this.shuffle(this.players);
   }
 
-  // Devuelve un array con los jugadores vivos
-  getAlivePlayers(players) {
-    return players.filter(player => player.health > 0);
+  getAlivePlayers() {
+    return this.players.filter(player => player.health > 0);
   }
+
   stop() {
-    console.log("Game stopped");
+    this.log("Game stopped");
     this.ended = true;
   }
+
   getPlayerWithMaxHealth() {
     return this.players.reduce((a, b) => (a.health > b.health ? a : b));
   }
+
   getPlayersWithMaxHealth() {
     const maxHealth = this.getPlayerWithMaxHealth().health;
     return this.players.filter(player => player.health === maxHealth);
   }
- 
-  showPlayersStats(players, ) {
+
+  showPlayersStats(players) {
     players.forEach(player => {
       this.log(`${player.name}: Salud = ${player.health}, Energía = ${player.energy}`);
     });
   }
-  static async simulate(runs =10,players,canvas){
-    const stats = [];
-    for (let i = 0; i < runs; i++) {
-      const startTime = Date.now();
-      const game = new Game(players, canvas,console.log);
-      const result = game.mainSimulate(100,startTime);
-      stats.push({
-        ...result,
-        time: Date.now() - startTime
-      });
-      console.log("run", i, "finished", result);
-    }
-    console.log("simulation ended")
-    return stats
-  }
-  mainSimulate(execution_time,startTime) {
-    //this.initPlayers();
-    this.players = this.s
-    const players = this.players;
-    try{
-      while(this.getAlivePlayers(players).length > 1){
-        if(Date.now() - startTime > execution_time){
-          console.log("Execution time exceeded");
-          break;
-        }
-        const alivePlayers = this.getAlivePlayers(players);
-        for(let i = 0; i < alivePlayers.length; i++){
-          const attacker = alivePlayers[i];
-          if(attacker.health <= 0) continue;
-          const aliveEnemies = this.getAlivePlayers(players).filter(player => player.name !== attacker.name);
-          const randomEnemy = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
-          attacker.attack(randomEnemy);
-        }
-      }
-    }catch(e){
-      console.error(e);
-    }
-    const winners = this.getPlayersWithMaxHealth();
-    return {
-      status : winners.length > 1 ? "draw" : "win",
-      players: winners
-    }
-  }
-  async main( ) {
+
+  async main() {
     this.log("Comienza la batalla 🏟.");
-    const players = this.players;
     await new Promise(resolve => setTimeout(resolve, 1000));
+
     let jugadas = 0;
-    const startTime = Date.now();
-    try {
-      while (this.getAlivePlayers(players).length > 1 && !this.ended) {
-        if (Date.now() - startTime > MAX_EXECUTION_TIME * players.length) {
-          break;
-        }
-        this.log("Tiempo restante: " + Math.floor((MAX_EXECUTION_TIME * players.length - (Date.now() - startTime)) / 1000) + " segundos.");
-        const alivePlayers = this.getAlivePlayers(players);
-        jugadas++;
-        for (let i = 0; i < alivePlayers.length; i++) {
-          const attacker = alivePlayers[i];
-          if (attacker.health <= 0) continue;
-          attacker.isHurt = false;
-          attacker.isTurn = true;
-          this.log(`Turno de ${attacker.name}`);
-          const enemies = this.getAlivePlayers(players).filter(player => player.name !== attacker.name);
-          attacker.play(enemies);
-          if (this.getAlivePlayers(players).length === 1) break;
-          await new Promise(resolve => setTimeout(resolve, PLAYER_TIMEOUT));
-          attacker.isTurn = false;
-          if (this.ended) break;
-          
-        }
+
+    while (this.shouldContinue()) {
+      const alivePlayers = this.getAlivePlayers();
+      jugadas++;
+
+      for (let attacker of alivePlayers) {
+
+        this.turnsRemaining--;
+        await this.handleTurn(attacker, alivePlayers);
+        if (!this.shouldContinue()) break;
       }
-      if (this.ended) {
-        this.log("El juego ha terminado.");
-      }
-      const winners = this.getPlayersWithMaxHealth();
-      if (winners.length > 1) {
-        this.log(`Ha habido un empate entre los jugadores ${winners.map(winner => winner.name).join(", ")}.`);
-      } else {
-        const winner = winners[0];
-        this.log(`${winner.name} ha vencido a todos sus rivales. Los dioses sonríen ante su hazaña gloriosa. ¡Que las canciones de victoria resuenen en todo el imperio!`);
-      }
-      return {
-        status : winners.length > 1 ? "draw" : "win",
-        players: winners,
-        turns: jugadas
-      }
-    } catch (err) {
-      console.error(err);
     }
+
+    return this.endGame(jugadas);
   }
 
+  shouldContinue() {
+    return this.getAlivePlayers().length > 1 && !this.ended && this.getTurnsRemaining() > 0;
+  }
+
+  getTurnsRemaining() {
+    return this.turnsRemaining
+  }
+
+  async handleTurn(attacker) {
+    if (attacker.health <= 0) return;
+
+    attacker.isHurt = false;
+    attacker.isTurn = true;
+    this.log(`Turno de ${attacker.name}`);
+
+    const enemies = this.getAlivePlayers().filter(player => player.name !== attacker.name);
+    attacker.play(enemies);
+
+    await new Promise(resolve => setTimeout(resolve, PLAYER_TIMEOUT));
+    attacker.isTurn = false;
+
+    if (this.ended || this.getTurnsRemaining() <= 0) return;
+  }
+
+  endGame(jugadas) {
+    if (this.ended) {
+      this.log("El juego ha terminado.");
+    }
+
+    const winners = this.getPlayersWithMaxHealth();
+    const status = winners.length > 1 ? "draw" : "win";
+    const winnerMessage = winners.length > 1
+      ? `Ha habido un empate entre los jugadores ${winners.map(winner => winner.name).join(", ")}.`
+      : `${winners[0].name} ha vencido a todos sus rivales. ¡Que las canciones de victoria resuenen en todo el imperio!`;
+
+    this.log(winnerMessage);
+
+    return {
+      status,
+      players: winners,
+      turns: jugadas,
+    };
+  }
+
+  async simulateMain() {
+    const startTime = Date.now();
+    let jugadas = 0;
+
+    while (this.getAlivePlayers().length > 1 && !this.ended) {
+      if ((Date.now() - startTime) / 1000 > 0.0001) break;
+
+      const alivePlayers = this.getAlivePlayers();
+      jugadas++;
+
+      for (let attacker of alivePlayers) {
+        this.simulateTurn(attacker, alivePlayers);
+        if (this.getAlivePlayers().length === 1) break;
+      }
+    }
+
+    return this.endSimulation(jugadas);
+  }
+
+  simulateTurn(attacker, alivePlayers) {
+    if (attacker.health <= 0) return;
+    const enemies = alivePlayers.filter(player => player !== attacker);
+    attacker.play(enemies);
+  }
+
+  endSimulation(jugadas) {
+    const winners = this.getPlayersWithMaxHealth();
+    return {
+      status: winners.length > 1 ? "draw" : "win",
+      players: winners,
+      turns: jugadas,
+    };
+  }
 }
+
+async function simulateGames(originalPlayers, numSimulations = 1000) {
+  const results = initializeResults(originalPlayers);
+
+  for (let i = 0; i < numSimulations; i++) {
+    const players = originalPlayers.map(player =>
+      new Player(player.name, MAX_HEALTH, MAX_ENERGY, false, player.playStrategy, () => { })
+    );
+
+    const game = new Game(players);
+    game.setLog(() => { });
+
+    const { status, players: winners, turns } = await game.simulateMain();
+    updateResults(results, status, winners, players);
+
+    results.averageTurns += turns;
+  }
+
+  results.averageTurns /= numSimulations;
+
+  return results;
+}
+
+function initializeResults(originalPlayers) {
+  const results = {
+    wins: {},
+    losses: {},
+    draws: {},
+    averageTurns: 0,
+  };
+
+  originalPlayers.forEach(player => {
+    results.wins[player.name] = 0;
+    results.losses[player.name] = 0;
+    results.draws[player.name] = 0;
+  });
+
+  return results;
+}
+
+function updateResults(results, status, winners, players) {
+  if (status === "win") {
+    results.wins[winners[0].name]++;
+    players.forEach(player => {
+      if (player.name !== winners[0].name) {
+        results.losses[player.name]++;
+      }
+    });
+  } else if (status === "draw") {
+    winners.forEach(winner => {
+      results.draws[winner.name]++;
+    });
+    players.forEach(player => {
+      if (!winners.some(w => w.name === player.name)) {
+        results.losses[player.name]++;
+      }
+    });
+  }
+}
+
 export default Game;
+export { simulateGames };

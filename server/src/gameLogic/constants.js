@@ -6,4 +6,4 @@ export const DEFENSE_ENERGY = 15;
 export const REST_ENERGY = 20;
 export const PLAYER_TIMEOUT = 1000;
 export const TURN_TIMEOUT = 1000;
-export const MAX_EXECUTION_TIME = 60 * 1000;
+export const MAX_TURNS = 3;
