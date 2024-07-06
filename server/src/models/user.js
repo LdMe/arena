@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
                     target: String,
                     attribute: String,
                     operator: String,
-                    value: Number,
+                    value: mongoose.Schema.Types.Mixed,
                     logic: String,
                     leftCondition: Object,
                     rightCondition: Object

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createDefaultCondition } from "../utils/condition";
+import { updateCondition as update } from "../utils/condition";
 
 function Condition({ condition, updateCondition }) {
     const renderConditionContent = () => {
@@ -7,14 +7,14 @@ function Condition({ condition, updateCondition }) {
             case 'comparison':
                 return <ComparisonCondition condition={condition} updateCondition={updateCondition} />;
             case 'composite':
-                return <NestedCondition condition={{...condition,level:(condition.level || 0) + 1}} updateCondition={updateCondition} />;
+                return <CompositeCondition condition={{ ...condition, level: (condition.level || 0) + 1 }} updateCondition={updateCondition} />;
             default:
                 return null;
         }
     };
 
     return (
-        <div className={`condition level-${condition.level || 0}`} style={{ margin: '5px', padding: '5px', border: '1px solid gray' }}>
+        <div className={`condition level-${condition.level || 0}`} >
             <select
                 value={condition.type}
                 onChange={e => updateCondition({ type: e.target.value })}
@@ -44,15 +44,15 @@ function ComparisonCondition({ condition, updateCondition }) {
             </select>
             {(condition.target === 'randomNumber' || condition.target === 'gladiatorCount') ? (
                 <></>
-            ):
-            (
-            <select value={condition.attribute || 'health'} onChange={e => updateCondition({ attribute: e.target.value })}
-            >
-                <option value="health">Vida</option>
-                <option value="energy">Energía</option>
-                <option value="isDefending">Defendiendo</option>
-            </select>
-            )}
+            ) :
+                (
+                    <select value={condition.attribute || 'health'} onChange={e => updateCondition({ attribute: e.target.value })}
+                    >
+                        <option value="health">Vida</option>
+                        <option value="energy">Energía</option>
+                        <option value="isDefending">Defendiendo</option>
+                    </select>
+                )}
 
             <select
                 value={condition.operator || 'gt'}
@@ -110,30 +110,27 @@ function GladiatorCountCondition({ condition, updateCondition }) {
     );
 }
 
-function NestedCondition({ condition, updateCondition }) {
 
-    const handleUpdateCondition = (updates,isLeft=true) => {
+function CompositeCondition({ condition, updateCondition }) {
+    const handleUpdateCondition = (updates, isLeft = true) => {
         
-
-        if(isLeft){
-            if(updates.type && condition.leftCondition.type !== updates.type){
-                const leftCondition = createDefaultCondition(updates.type,condition.level)
-                updateCondition({ leftCondition })
-            }else{
-                updateCondition({ leftCondition: { ...condition.leftCondition, ...updates } })
-            }
-        }else{
-            if(updates.type && condition.rightCondition.type !== updates.type){
-                const rightCondition = createDefaultCondition(updates.type,condition.level)
-                updateCondition({ rightCondition })
-            }else{
-                updateCondition({ rightCondition: { ...condition.rightCondition, ...updates } })
-            }
+        if (isLeft) {
+            const leftCondition = update(condition.leftCondition, updates);
+            updateCondition({leftCondition});
+        } else {
+            const rightCondition = update(condition.rightCondition, updates);
+            updateCondition({rightCondition});
         }
-    }
+    };
+
     return (
         <div>
-            <select
+            
+            <Condition
+                condition={condition.leftCondition}
+                updateCondition={(updates) => handleUpdateCondition(updates, true)}
+            />
+            <select className={`condition level-${condition.level || 0}`}
                 value={condition.logic || 'and'}
                 onChange={e => updateCondition({ logic: e.target.value })}
             >
@@ -141,12 +138,8 @@ function NestedCondition({ condition, updateCondition }) {
                 <option value="or">O</option>
             </select>
             <Condition
-                condition={condition.leftCondition}
-                updateCondition={(updates) => handleUpdateCondition(updates,true)}
-            />
-            <Condition
                 condition={condition.rightCondition}
-                updateCondition={(updates) => handleUpdateCondition(updates,false)}
+                updateCondition={(updates) => handleUpdateCondition(updates, false)}
             />
         </div>
     );

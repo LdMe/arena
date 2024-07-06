@@ -1,7 +1,7 @@
-import  {  useReducer } from 'react';
-import Block from './Block';
-import CodeDisplay from './CodeDisplay';
-
+import  {  useEffect } from 'react';
+import Block from '../Block';
+import CodeDisplay from '../CodeDisplay';
+import './Strategy.css';
 
 
 function StrategyBuilder({blocks, dispatch}) {
@@ -25,7 +25,7 @@ function StrategyBuilder({blocks, dispatch}) {
   }
   console.log("blocks",blocks)
   return (
-    <div>
+    <div className="strategy-builder">
       <h2>Construye tu estrategia</h2>
       {blocks.map((block,index) => (
         <Block 

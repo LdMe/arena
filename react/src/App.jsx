@@ -1,6 +1,6 @@
 import { useState, useReducer, useEffect } from 'react'
-import StrategyBuilder from './components/StrategyBuilder'
-import Map from './components/Map';
+import StrategyBuilder from './components/strategy/StrategyBuilder'
+import Menu from './components/menu/Menu';
 import { createDefaultBlock } from './utils/condition';
 import './App.css'
 import Register from './components/register/Register';
@@ -85,11 +85,11 @@ function App() {
     setUserData(data);
     dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
     //socket.emit("login", { username: data.username });
-    handleChangeState("map")
+    handleChangeState("menu")
   };
   const handleCreateStrategy = async () => {
     await updateBlocks(blocks);
-    handleChangeState("map");
+    handleChangeState("menu");
   }
   const handleChangeState = (newState) => {
     setState(newState);
@@ -99,8 +99,8 @@ function App() {
       {state === "register" && (
         <Register onSubmit={handleSubmitUserData} />
       )}
-      {state === "map" && (
-        <Map onEnd={handleChangeState} />
+      {state === "menu" && (
+        <Menu onEnd={handleChangeState} />
       )}
       {state === "game" && (
         <>
@@ -110,11 +110,13 @@ function App() {
         </>
       )}
       {state === "builder" && (
-        <>
+        <div className="builder">
           <StrategyBuilder blocks={blocks} dispatch={dispatch} />
+          <section className='footer'>
           <button onClick={handleCreateStrategy}>Guardar</button>
-          <button onClick={() => handleChangeState("map")}>Volver</button>
-        </>
+          <button onClick={() => handleChangeState("menu")}>Volver</button>
+          </section>
+        </div>
       )}
       {/* <StrategyBuilder blocks={blocks} dispatch={dispatch} />
       <button onClick={() => setPlaying(!playing)}>{playing ? 'Parar' : 'Comenzar'}</button>

@@ -42,27 +42,24 @@ function generateActionCode(action) {
 }
 function generateStrategyCode(blocks, executable = false) {
   let blocksCode = blocks.map((block, index) => {
-    if (block.conditions.length === 0) return `// Bloque ${index + 1}\n${generateActionCode(block.action)}`
-    return (
-      `// Bloque ${index + 1}
+    if (block.conditions.length === 0) return `    // Bloque ${index + 1}\n    ${generateActionCode(block.action)}`
+    return (`    // Bloque ${index + 1}
     if (${generateConditionCode(block.conditions)}) {
-      ${generateActionCode(block.action)}
-    }
-  `)
+        ${generateActionCode(block.action)}
+    }`)
   }).join('\n');
   let innerCode = ``;
   if (executable) {
     innerCode = generateHelperFunctions()
   }
-  innerCode += `
-  ${blocksCode}
-  // Acción por defecto
-  return null;
-  `
+  innerCode += `${blocksCode}
+    // Acción por defecto (pasar turno)
+    return null;
+`
   if (executable) {
     return new Function('self', 'enemies', innerCode)
   }
-  const functionString = "function executeStrategy(self, enemies) {" + innerCode + "\n}"
+  const functionString = "function executeStrategy(self, enemies) {\n" + innerCode + "}"
   return functionString
 
 }

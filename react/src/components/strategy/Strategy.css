@@ -1,0 +1,125 @@
+/* General Styles */
+.builder {
+    font-family: Arial, sans-serif;
+    height: 100%;
+}
+
+.strategy-builder {
+    height: 90%;
+    overflow-y: auto;
+}
+
+h2, h3 {
+    color: #333;
+}
+
+/* Block Styles */
+.block {
+    border: 1px solid #000;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.block h3 {
+    margin-top: 0;
+}
+
+/* Condition Styles */
+.conditions, .actions {
+    margin: 10px 0;
+}
+
+.condition {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #fff;
+}
+
+.condition.level-0 {
+    background-color: #b3cde0; /* Light Blue */
+    border-color: #6497b1;
+}
+
+.condition.level-1 {
+    background-color: #ccebc5; /* Light Green */
+    border-color: #7b9e87;
+}
+
+.condition.level-2 {
+    background-color: #ffffcc; /* Light Yellow */
+    border-color: #e6e600;
+}
+
+.condition.level-3 {
+    background-color: #fbb4ae; /* Light Red */
+    border-color: #de6161;
+}
+
+.condition.level-4 {
+    background-color: #decbe4; /* Light Purple */
+    border-color: #9460a8;
+}
+
+.condition.level-5 {
+    background-color: #b3e2cd; /* Light Teal */
+    border-color: #4db6ac;
+}
+
+.condition.level-6 {
+    background-color: #fed9a6; /* Light Orange */
+    border-color: #ffb74d;
+}
+
+.condition.level-7 {
+    background-color: #d4b9da; /* Light Plum */
+    border-color: #8e66a7;
+}
+
+.condition.level-8 {
+    background-color: #f2f2f2; /* Light Gray */
+    border-color: #b0b0b0;
+}
+
+/* Action Styles */
+.action {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #fafafa;
+}
+
+/* Code Display Styles */
+.code-display {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #f8f8ff;
+    text-align: start;
+}
+
+.code-display pre {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    color: #000;
+}
+
+.code-display code {
+    white-space: pre;
+}
+
+/* Footer Styles */
+.footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.footer button {
+    margin: 5px 10px;
+}
