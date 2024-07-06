@@ -56,7 +56,7 @@ const Game = ({ blocks, userData, onEnd, socket}) => {
                         </>
                     )}
                 </form>
-                <button onClick={()=>onEnd("builder")}>Estrategia</button>
+                <button onClick={()=>onEnd("map")}>Volver</button>
                 <button onClick={handleStartGame}>Comenzar</button>
             </section>
         )

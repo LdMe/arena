@@ -71,9 +71,9 @@ const updateUser = async (username, userData) => {
 }
 const getBlocks = async (username) => {
     try{
-        const user =  await user.findOne({ username });
-        if(user){
-            return user.blocks;
+        const dbUser =  await user.findOne({ username });
+        if(dbUser){
+            return dbUser.blocks;
         }
         return {error: "User not found",status: 404}
     }

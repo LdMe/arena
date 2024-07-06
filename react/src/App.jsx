@@ -1,14 +1,13 @@
 import { useState, useReducer, useEffect } from 'react'
 import StrategyBuilder from './components/StrategyBuilder'
-import GameCanvas from './components/game/GameCanvas'
-import Log from './components/game/Log'
+import Map from './components/Map';
 import { createDefaultBlock } from './utils/condition';
 import './App.css'
 import Register from './components/register/Register';
 import Game from './components/game/Game';
-import { login, updateBlocks } from './utils/fetch';
+import { login, updateBlocks,getBlocks } from './utils/fetch';
 import socket from './utils/socket';
-function resetBlock(state,action){
+function resetBlock(state, action) {
   const defaultBlock = createDefaultBlock();
   const id = action.payload;
   const index = state.findIndex(block => block.id === id);
@@ -35,7 +34,7 @@ function strategyReducer(state, action) {
       localStorage.setItem('blocks', JSON.stringify(remainingBlocks));
       return remainingBlocks;
     case 'RESET_BLOCK':
-      return resetBlock(state,action);
+      return resetBlock(state, action);
     case 'RESET_BLOCKS':
       localStorage.removeItem('blocks');
       return [];
@@ -54,8 +53,6 @@ function strategyReducer(state, action) {
       }
       localStorage.setItem('blocks', JSON.stringify(newBlocks));
       return newBlocks;
-    case 'LOAD_BLOCKS':
-      return localStorage.getItem('blocks') ? JSON.parse(localStorage.getItem('blocks')) : [];
     default:
       return state;
   }
@@ -70,33 +67,44 @@ function App() {
   useEffect(() => {
     socket.connect();
     return () => {
-        socket.disconnect();
+      socket.disconnect();
     }
-}, [userData])
+  }, [userData])
   useEffect(() => {
-    dispatch({ type: 'LOAD_BLOCKS' });
-  }, []);
+    loadBlocks();
+  }, [state]);
+  const loadBlocks = async () => {
+    const newBlocks = await getBlocks();
+    console.log("newBlocks",newBlocks)
+    dispatch({ type: 'SET_BLOCKS', payload: newBlocks });
+  }
   const addLog = (text) => {
     setLog(prevLog => [...prevLog, text]);
   };
-  const handleSubmitUserData = async(data) => {
+  const handleSubmitUserData = async (data) => {
     setUserData(data);
     dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
     //socket.emit("login", { username: data.username });
-    setState("builder")
+    handleChangeState("map")
   };
-  const handleCreateStrategy = async() => {
+  const handleCreateStrategy = async () => {
     await updateBlocks(blocks);
-    setState("game");
+    handleChangeState("map");
+  }
+  const handleChangeState = (newState) => {
+    setState(newState);
   }
   return (
     <>
       {state === "register" && (
         <Register onSubmit={handleSubmitUserData} />
       )}
+      {state === "map" && (
+        <Map onEnd={handleChangeState} />
+      )}
       {state === "game" && (
         <>
-          <Game blocks={blocks} userData={userData} onEnd={setState} socket={socket}/>
+          <Game blocks={blocks} userData={userData} onEnd={handleChangeState} socket={socket} />
           {/* <GameCanvas log={addLog} strategy={{ name: userData.username, blocks }} />
           <Log log={log} /> */}
         </>
@@ -104,7 +112,8 @@ function App() {
       {state === "builder" && (
         <>
           <StrategyBuilder blocks={blocks} dispatch={dispatch} />
-          <button onClick={handleCreateStrategy}>Comenzar</button>
+          <button onClick={handleCreateStrategy}>Guardar</button>
+          <button onClick={() => handleChangeState("map")}>Volver</button>
         </>
       )}
       {/* <StrategyBuilder blocks={blocks} dispatch={dispatch} />
