@@ -10,7 +10,18 @@
     overflow: hidden; 
 }
 .game-options {
-    margin-top:20%;
+    height: 100%;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+.game-options-section {
+    height: 100%;
+}
+.game-options-form {
+    height: 90%;
 }
 .game > article {
     width: 100%;

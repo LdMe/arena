@@ -20,7 +20,7 @@ function Condition({ condition, updateCondition }) {
                 onChange={e => updateCondition({ type: e.target.value })}
             >
                 <option value="comparison">Comparación</option>
-                <option value="composite">Condición Compuesta</option>
+                {condition.level < 6 && <option value="composite">Condición Compuesta</option>}
             </select>
             {renderConditionContent()}
         </div>

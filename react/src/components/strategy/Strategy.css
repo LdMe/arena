@@ -9,9 +9,7 @@
     overflow-y: auto;
 }
 
-h2, h3 {
-    color: #333;
-}
+
 
 /* Block Styles */
 .block {
@@ -115,11 +113,8 @@ h2, h3 {
 }
 
 /* Footer Styles */
-.footer {
+/* .footer {
     margin-top: 20px;
     text-align: center;
-}
+} */
 
-.footer button {
-    margin: 5px 10px;
-}
