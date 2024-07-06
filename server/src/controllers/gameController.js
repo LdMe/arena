@@ -68,10 +68,10 @@ const init = async (strategy, socket = null) => {
     }
     newGame.setLog(log);
     if (strategy.random) {
-        players = createPlayers(log, true, strategy.numPlayers);
+        players = await createPlayers(log, true, strategy.numPlayers,strategy.username);
     }
     else {
-        players = createPlayers(log);
+        players = await createPlayers(log, false, strategy.numPlayers,strategy.username);
     }
     const newPlayer = createPlayer(strategy.username, generateStrategyCode(strategy.blocks, true), log);
     console.log("newPlayer", newPlayer)

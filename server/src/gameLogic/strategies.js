@@ -18,10 +18,10 @@ const randomPlay = function (player, enemies) {
     }
 }
 const grupoAzul = function (player, enemies) {
-    if (player.energy < 15) {
+    if (player.energy < 20) {
         return player.rest()
     }
-    if (player.isDefending === false && player.energy >= 15) {
+    if (player.isDefending === false && player.energy >= 20) {
 
         return player.defend();
     }

@@ -41,7 +41,7 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
                             <option value="random">Aleatorio</option>
                             <option value="manual">Mejores</option>
                         </select>
-                        {hasRandomPlayers && (
+                        
                             <>
                                 <label htmlFor="numPlayers">Número de enemigos</label>
                                 <input
@@ -56,7 +56,6 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
                                 />
                                 <input type="number" name="numPlayers" id="numPlayers" min="1" max="9" step="1" value={numPlayers} onChange={e => setNumPlayers(e.target.value)} />
                             </>
-                        )}
                     </form>
 
                 </section>

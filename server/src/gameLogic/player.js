@@ -1,16 +1,18 @@
 import { MAX_HEALTH, MAX_ENERGY, ATTACK_DAMAGE, ATTACK_ENERGY, DEFENSE_ENERGY, REST_ENERGY } from './constants.js';
 import { grupoAzul, grupoVerde, grupoRojo, grupoAmarillo, randomPlay, chatGpt } from './strategies.js';
+import userModel from '../models/user.js';
+import { generateStrategyCode } from '../utils/strategy.js';
 const sprites = {
     attack: 0,
     idle: 1,
     rest: 2
 }
-const colors =["amber","chartreuse","crimson","indigo","magenta","olive","periwinkle","teal","turquoise","vermilion"];
-function getSprite(index){
-    return "/sprites/" + colors[index]+".png";
+const colors = ["amber", "chartreuse", "crimson", "indigo", "magenta", "olive", "periwinkle", "teal", "turquoise", "vermilion"];
+function getSprite(index) {
+    return "/sprites/" + colors[index] + ".png";
 }
 export class Player {
-    constructor(name, health, energy, isDefending, playStrategy,  log) {
+    constructor(name, health, energy, isDefending, playStrategy, log) {
         this.name = name;
         this.health = health;
         this.energy = energy;
@@ -26,7 +28,7 @@ export class Player {
 
     }
     static copy(player) {
-        return new Player(player.name, player.health, player.energy, player.isDefending, player.playStrategy,  player.log);
+        return new Player(player.name, player.health, player.energy, player.isDefending, player.playStrategy, player.log);
     }
     getData() {
         return {
@@ -35,7 +37,7 @@ export class Player {
             energy: this.energy,
             isDefending: this.isDefending,
             playStrategy: this.playStrategy.toString(),
-            log : this.log.toString()
+            log: this.log.toString()
         };
     }
 
@@ -43,7 +45,7 @@ export class Player {
         if (this.energy >= ATTACK_ENERGY) {
             this.action = "attack";
             this.energy -= ATTACK_ENERGY;
-            
+
             if (defender.isDefending) {
                 defender.isDefending = false;
                 defender.action = "idle";
@@ -95,27 +97,54 @@ export class Player {
     }
 }
 
+async function getRandomPlayers(log, numPlayers, excludedUsername) {
+    // get a random list of players, excluding the specified user
+    const users = await userModel.aggregate([
+        { $match: { username: { $ne: excludedUsername } } }, // exclude the specified user
+        { $sample: { size: parseInt(numPlayers) } }
+    ]);
 
-export function createPlayers(log,random=false,numberOfPlayers=5) {
-    if (random) {
-        const players = [];
-        for (let i = 0; i < numberOfPlayers; i++) {
-            players.push(new Player("Random "+ (i + 1), MAX_HEALTH, MAX_ENERGY, false, randomPlay, log));
+    const players = users.map((user) => new Player(user.username, MAX_HEALTH, MAX_ENERGY, false, generateStrategyCode(user.blocks, true), log));
+
+    if (players.length < numPlayers) {
+        const difference = numPlayers - players.length;
+        for (let i = 0; i < difference; i++) {
+            players.push(new Player("Random " + (i + 1), MAX_HEALTH, MAX_ENERGY, false, randomPlay, log));
         }
-        return players;
     }
-    const players = [
-        new Player("Callo Pie", MAX_HEALTH, MAX_ENERGY, false, grupoAzul, log),
-        new Player("Karis", MAX_HEALTH, MAX_ENERGY, false, grupoVerde,  log),
-        new Player("Niebla Roja", MAX_HEALTH, MAX_ENERGY, false, grupoRojo,  log),
-        new Player("Amarillo", MAX_HEALTH, MAX_ENERGY, false, grupoAmarillo,  log),
-        new Player("Randomius", MAX_HEALTH, MAX_ENERGY, false, randomPlay,  log),
-        new Player("ChatGPT", MAX_HEALTH, MAX_ENERGY, false, chatGpt,  log),
-        //new Player("Gepeto", MAX_HEALTH, MAX_ENERGY, false, chatGpt,  log)
-    ];
-
     return players;
 }
-export function createPlayer(name,playStrategy,log) {
-    return new Player(name, MAX_HEALTH, MAX_ENERGY, false, playStrategy,  log);
+async function getBestPlayers(log, numPlayers,excludedUsername) {
+    // get the players with the most wins, and draws
+    const users = await userModel.find({ username: { $ne: excludedUsername },won:{$gt:0},draw:{$gt:0} }).sort({ won: -1, draw: -1 }).limit(numPlayers);
+    const players = users.map((user) => new Player(user.username, MAX_HEALTH, MAX_ENERGY, false, generateStrategyCode(user.blocks, true), log));
+    
+    console.log("players",players)
+    if(players.length < numPlayers){
+        const bestPlayers = [
+            {username:"Callo Pie",strategy:grupoAzul},
+            {username:"Niebla Roja",strategy:grupoRojo},
+            {username:"Amarillo",strategy:grupoAmarillo},
+            {username:"Karis",strategy:grupoVerde},
+            {username:"Gepeto",strategy:chatGpt}
+        ]
+        const difference = numPlayers - players.length;
+        for (let i = 0; i < difference; i++) {
+            players.push(new Player(bestPlayers[i].username, MAX_HEALTH, MAX_ENERGY, false, bestPlayers[i].strategy, log));
+        }
+    }
+    return players;
+}
+export async function createPlayers(log, random = false, numberOfPlayers = 5, username) {
+    if (random) {
+        console.log("numberOfPlayers", numberOfPlayers)
+        const randomPlayers = await getRandomPlayers(log, numberOfPlayers, username);
+        console.log("randomPlayers", randomPlayers)
+        return randomPlayers;
+    }
+    const players = await getBestPlayers(log, numberOfPlayers, username);
+    return players;
+}
+export function createPlayer(name, playStrategy, log) {
+    return new Player(name, MAX_HEALTH, MAX_ENERGY, false, playStrategy, log);
 }
