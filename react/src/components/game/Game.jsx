@@ -28,7 +28,6 @@ const Game = ({ blocks, userData, onEnd, socket}) => {
     const handleStartGame = () => {
         console.log("log", log)
         setLog([]);
-        start();
         setPlaying(true);
     }
     if (!playing) {
@@ -57,6 +56,7 @@ const Game = ({ blocks, userData, onEnd, socket}) => {
                         </>
                     )}
                 </form>
+                <button onClick={()=>onEnd("builder")}>Estrategia</button>
                 <button onClick={handleStartGame}>Comenzar</button>
             </section>
         )

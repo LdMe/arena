@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 /*
 blocks:Object
 blocks:"[{"id":1720038469006,"conditions":[{"id":1720038470901,"type":"composite","level":0,"target":"self","attribute":"health","operator":"gt","value":50,"logic":"and","leftCondition":{"id":1720038544063,"type":"comparison","level":1,"target":"self","attribute":"health","operator":"gt","value":50},"rightCondition":{"id":1720038544063,"type":"comparison","level":1,"target":"self","attribute":"health","operator":"gt","value":50}}],"action":{"id":1720038469006,"type":"attack","target":"minEnergy"}}]"
@@ -9,14 +10,14 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    email: String,
+    password: String,
     blocks: [
         {
             id: Number,
             conditions: [
                 {
                     id: Number,
-                    type: String,
+                    type: {type:String},
                     level: Number,
                     target: String,
                     attribute: String,
@@ -29,7 +30,7 @@ const userSchema = new mongoose.Schema({
             ],
             action: {
                 id: Number,
-                type: String,
+                type: {type:String},
                 target: String
             }
         }
@@ -52,5 +53,23 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+userSchema.pre('save', function(next) {
+    const user = this;
+    if (!user.isModified('password')) {
+        return next();
+    }
+    bcrypt.genSalt(10, (err, salt) => {
+        if (err) {
+            return next(err);
+        }
+        bcrypt.hash(user.password, salt, (err, hash) => {
+            if (err) {
+                return next(err);
+            }
+            user.password = hash;
+            next();
+        });
+    });
+});
 
 export default mongoose.model('User', userSchema)

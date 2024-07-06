@@ -6,7 +6,7 @@ import { createDefaultBlock } from './utils/condition';
 import './App.css'
 import Register from './components/register/Register';
 import Game from './components/game/Game';
-
+import { login, updateBlocks } from './utils/fetch';
 import socket from './utils/socket';
 function resetBlock(state,action){
   const defaultBlock = createDefaultBlock();
@@ -39,7 +39,8 @@ function strategyReducer(state, action) {
     case 'RESET_BLOCKS':
       localStorage.removeItem('blocks');
       return [];
-
+    case 'SET_BLOCKS':
+      return action.payload;
     case 'MOVE_BLOCK':
       const index = state.findIndex(block => block.id === action.payload.id);
       const direction = action.payload.direction;
@@ -68,7 +69,6 @@ function App() {
   const [userData, setUserData] = useState({});
   useEffect(() => {
     socket.connect();
-    
     return () => {
         socket.disconnect();
     }
@@ -79,12 +79,16 @@ function App() {
   const addLog = (text) => {
     setLog(prevLog => [...prevLog, text]);
   };
-  const handleSubmitUserData = (data) => {
-    console.log("log in")
+  const handleSubmitUserData = async(data) => {
     setUserData(data);
-    socket.emit("login", { username: data.username });
+    dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
+    //socket.emit("login", { username: data.username });
     setState("builder")
   };
+  const handleCreateStrategy = async() => {
+    await updateBlocks(blocks);
+    setState("game");
+  }
   return (
     <>
       {state === "register" && (
@@ -100,7 +104,7 @@ function App() {
       {state === "builder" && (
         <>
           <StrategyBuilder blocks={blocks} dispatch={dispatch} />
-          <button onClick={() => setState("game")}>Comenzar</button>
+          <button onClick={handleCreateStrategy}>Comenzar</button>
         </>
       )}
       {/* <StrategyBuilder blocks={blocks} dispatch={dispatch} />

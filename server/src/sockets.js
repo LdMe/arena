@@ -16,12 +16,11 @@ const createSocketServer = (server) => {
         socket.on('login', async(data) => {
             try {
                 console.log(`user ${data.username} logged in`);
-                const user = await userController.getUserByUsername(data.username);
+                const user = await userController.getOrCreateUser(data);
                 if (user) {
                     console.log("user exists",user)
                    return socket.emit('login', user);
                 }
-                userController.createUser(data);
             }
             catch (e) {
                 console.error(e);

@@ -1,31 +1,46 @@
 import { useState } from "react";
+import { login } from "../../utils/fetch";
 import './Register.css'
-
+import { saveToken } from "../../utils/local";
 const Register = ({onSubmit}) => {
     const [data, setData] = useState({
         username: '',
-        email: ''
+        password: ''
     })
+    const [error, setError] = useState(null)
     const handleChange = (e) => {
         setData({ ...data, [e.target.name]: e.target.value })
     }
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault()
         if(!data.username){
-            alert('Por favor, ingresa un nombre de usuario')
+            setError('Por favor, ingresa un nombre de usuario')
             return
         }
-        onSubmit(data)
+        if(!data.password){
+            setError('Por favor, ingresa una contraseña')
+            return
+        }
+
+        const result = await login(data.username, data.password);
+        if(result.error){
+            setError(result.error)
+            return
+        }
+
+        saveToken(result.token)
+        onSubmit(result.user)
     }
     return (
         <section className="register-form">
-            <h2>Registro</h2>
+            <h2>Coliseo </h2>
+            {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
             <label htmlFor="username">Nombre de tu personaje:</label>
             <input type="text" name="username" value={data.username} onChange={handleChange} />
-            <label htmlFor='email'>Email <br/>(opcional, para enviar notificaciones):</label>
-            <input type="email" name="email" value={data.email} onChange={handleChange}/>
-            <button type="submit">Crear Estraregia</button>
+            <label htmlFor='password'>Contraseña:</label>
+            <input type="password" name="password" value={data.password} onChange={handleChange}/>
+            <button type="submit">Entrar</button>
         </form>
         </section>
     )
