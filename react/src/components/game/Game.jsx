@@ -44,8 +44,8 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
                         <label htmlFor="playerTypes">Dificultad</label>
                         <select name="playerTypes" id="playerTypes" value={difficulty} onChange={handleDifficulty}>
                             <option value="random">Novicius (fácil)</option>
-                            <option value="medium">Gladiator (médio)</option>
-                            <option value="hard">Imperator (dificil)</option>
+                            <option value="medium">Gladiator (medio)</option>
+                            <option value="hard">Imperator (difícil)</option>
                         </select>
                         
                             <>

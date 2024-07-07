@@ -1,5 +1,5 @@
-import  {  useEffect } from 'react';
-import Block from '../Block';
+
+import Block from '../block/Block';
 import CodeDisplay from '../CodeDisplay';
 import './Strategy.css';
 

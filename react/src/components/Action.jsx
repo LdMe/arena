@@ -1,6 +1,7 @@
 function Action({ action, updateAction }) {
     return (
         <div className="action" style={{ margin: '5px', padding: '5px', border: '1px solid lightgray' }}>
+            <h3>Acción</h3>
             <select
                 value={action.type}
                 onChange={e => updateAction({ type: e.target.value })}
