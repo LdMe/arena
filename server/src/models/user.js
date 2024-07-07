@@ -32,7 +32,8 @@ const userSchema = new mongoose.Schema({
                 id: Number,
                 type: {type:String},
                 target: String
-            }
+            },
+            comment: String
         }
     ],
     totalGames: {

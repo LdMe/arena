@@ -71,7 +71,7 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
                                 onChange={e => setSpeed(e.target.value)}
                                 min="0.5"
                                 max="4"
-                                step="0.25"
+                                step="0.5"
                             />
                             <input type="number" name="speed" id="speed" min="0.5" max="4" step="0.25" value={speed} onChange={e => setSpeed(e.target.value)} />
                     </form>
