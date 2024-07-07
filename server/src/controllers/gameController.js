@@ -54,10 +54,12 @@ function processResults(mainGameResult, simulationResults) {
   return sortedStats;
 }
 
-const init = async (strategy, socket = null,socketListener = null) => {
+const init = async (strategy, socket = null,multiplayer=false) => {
   console.log("strategy", strategy);
   let players = [];
-  const newGame = new Game();
+  const speed = strategy.speed || 1;
+  console.log("speed", speed);
+  const newGame = new Game([],null,speed);
 
   let log = (...args) => console.log(...args);
   if (socket) {
@@ -72,25 +74,17 @@ const init = async (strategy, socket = null,socketListener = null) => {
   if (Array.isArray(strategy.usernames)) {
     for (const username of strategy.usernames) {
       const user = await userController.getUserByUsername(username);
+      if(!user) continue;
       const player = createPlayer(username, generateStrategyCode(user.blocks, true), log);
       players.push(player);
-      if (socketListener) {
-        socketListener.on("leaveRoom", (data) => {
-          console.log("leaveRoom", data);
-          newGame.players = newGame.players.filter(p => p.name !== data.username);
-          console.log("newGame.players", newGame.players);
-        });
-        socketListener.on("disconnect", () => {
-          newGame.stop();
-        });
-      }
     }
   } else {
-    if (strategy.random) {
-      players = await createPlayers(log, true, strategy.numPlayers, strategy.username);
-    } else {
-      players = await createPlayers(log, false, strategy.numPlayers, strategy.username);
+    switch (strategy.difficulty) {
+      case "easy":
+
     }
+    players = await createPlayers(log, strategy.difficulty, strategy.numPlayers, strategy.username);
+    
     const newPlayer = createPlayer(strategy.username, generateStrategyCode(strategy.blocks, true), log);
     console.log("newPlayer", newPlayer);
     players.push(newPlayer);
@@ -108,7 +102,9 @@ const init = async (strategy, socket = null,socketListener = null) => {
   const simulationPromise = simulateGames(newGame.players);
   const mainGameResult = await newGame.main();
   const simResults = await simulationPromise;
-  await updatePlayerStats(players, mainGameResult, simResults);
+  if(multiplayer && players.length > 1) {
+    await updatePlayerStats(players, mainGameResult, simResults);
+  }
   const results = processResults(mainGameResult, simResults);
 
   if (socket) {

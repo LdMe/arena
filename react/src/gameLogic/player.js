@@ -20,6 +20,9 @@ export class Player {
         console.log("image src,index",image,index)
         this.image = new Image();
         this.image.src = image.src || image;
+        this.onLoad = new Promise(resolve => {
+            this.image.onload = () => resolve();
+        })
         this.action = "idle";
         this.isHurt = false;
     }

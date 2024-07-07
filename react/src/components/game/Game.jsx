@@ -5,41 +5,47 @@ import './Game.css';
 
 const Game = ({ blocks, userData, onEnd, socket }) => {
     const [log, setLog] = useState([]);
-    const [hasRandomPlayers, setHasRandomPlayers] = useState(true);
+    const [difficulty, setDifficulty] = useState(true);
     const [numPlayers, setNumPlayers] = useState(5);
     const [playing, setPlaying] = useState(false);
+    const [speed, setSpeed] = useState(1);
     const [game, setGame] = useState(null);
 
 
     const start = () => {
-        socket.emit("startGame", { username: userData.username, blocks: userData.blocks });
+        socket.emit("startGame", { username: userData.username, blocks: userData.blocks,speed});
     }
     const addLog = (text) => {
         if (text === log[log.length - 1]) return
         setLog(prevLog => [...prevLog, text]);
     };
-    const handlePlayerTypes = (e) => {
-        setHasRandomPlayers(e.target.value === "random")
-    }
-    const handleResetGame = () => {
-        console.log("reset")
-        setPlaying(false);
+    const handleDifficulty = (e) => {
+        setDifficulty(e.target.value)
     }
     const handleStartGame = () => {
         console.log("log", log)
         setLog([]);
         setPlaying(true);
     }
+    const handleStopGame = () => {
+        socket.emit("stopGame");
+        
+    }
+    const handleExitBattle = () => {
+        handleStopGame();
+        setPlaying(false);
+    }
     if (!playing) {
         return (
             <section className="game-options">
                 <section className="game-options-section">
-                    <h2>Configuración</h2>
+                    <h2>Entrenamiento</h2>
                     <form className="game-options-form">
-                        <label htmlFor="playerTypes">Enemigos</label>
-                        <select name="playerTypes" id="playerTypes" onChange={handlePlayerTypes}>
-                            <option value="random">Aleatorio</option>
-                            <option value="manual">Mejores</option>
+                        <label htmlFor="playerTypes">Dificultad</label>
+                        <select name="playerTypes" id="playerTypes" value={difficulty} onChange={handleDifficulty}>
+                            <option value="random">Novicius (fácil)</option>
+                            <option value="medium">Gladiator (médio)</option>
+                            <option value="hard">Imperator (dificil)</option>
                         </select>
                         
                             <>
@@ -56,6 +62,18 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
                                 />
                                 <input type="number" name="numPlayers" id="numPlayers" min="1" max="9" step="1" value={numPlayers} onChange={e => setNumPlayers(e.target.value)} />
                             </>
+                            <label htmlFor="speed">Velocidad</label>
+                            <input
+                                type="range"
+                                name="speed"
+                                id="speed"
+                                value={speed}
+                                onChange={e => setSpeed(e.target.value)}
+                                min="0.5"
+                                max="4"
+                                step="0.25"
+                            />
+                            <input type="number" name="speed" id="speed" min="0.5" max="4" step="0.25" value={speed} onChange={e => setSpeed(e.target.value)} />
                     </form>
 
                 </section>
@@ -69,12 +87,12 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
     }
     return (
         <section className="game">
-            <GameCanvas strategy={{ username: userData.username, blocks, random: hasRandomPlayers, numPlayers }} socket={socket} log={addLog} />
+            <GameCanvas strategy={{ username: userData.username, blocks, difficulty: difficulty, numPlayers, speed}} socket={socket} log={addLog} />
             <Log log={log} />
             <section className="buttons">
-
-                <button onClick={handleResetGame}>Reiniciar partida</button>
-                <button onClick={() => onEnd("menu")}>Volver</button>
+                {}
+                <button onClick={handleStopGame}>Finalizar simulación</button>
+                <button onClick={handleExitBattle}>Volver</button>
             </section>
         </section>
     )

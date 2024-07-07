@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react"
 import GameCanvas from "../game/GameCanvas";
 import Log from "../game/Log";
-const Coliseum = ({onEnd,socket,username}) => {
+import Modal from "../modal/Modal";
+import CreateRoom from "./CreateRoom";
+import SearchRoom from "./SearchRoom";
+const Coliseum = ({ onEnd, socket, username }) => {
     const [roomName, setRoomName] = useState("");
     const [publicRooms, setPublicRooms] = useState([]);
     const [currentRoom, setCurrentRoom] = useState(null);
@@ -25,39 +28,47 @@ const Coliseum = ({onEnd,socket,username}) => {
         return () => {
             socket.off("updateRooms")
             socket.off("updateRoom")
+            socket.emit("leaveRoom", { roomId: currentRoom?.id })
         }
     }, [socket])
     const addLog = (text) => {
         setLog(prevLog => [...prevLog, text]);
     }
-    const handleCreateRoom = () => {
-        socket.emit("createRoom", { roomId: roomName, isPublic: true })
+    const handleCreateRoom = (room) => {
+        console.log("createRoom", room)
+        socket.emit("createRoom", room)
     }
     const handleLeaveRoom = () => {
         setPlaying(false);
-        if(!currentRoom) return
+        if (!currentRoom) return
         socket.emit("leaveRoom", { roomId: currentRoom.id })
         setCurrentRoom(null);
     }
     const handleStartRoom = () => {
         console.log("startRoom")
-        socket.emit("startRoom", { roomId: currentRoom.id })
+        socket.emit("startRoom", { roomId: currentRoom.id,speed:1 })
     }
-    if(playing){
-        return(
+    const handleJoinRoom = (roomId,role="player") => {
+        socket.emit("joinRoom", { roomId, role })
+    }
+    const handleStopPlaying = () => {
+        setPlaying(false);
+    }
+    if (playing) {
+        return (
             <section className="game">
-            <GameCanvas multiplayer={true} socket={socket} log={addLog} />
-            <Log log={log} />
-            <section className="buttons">
+                <GameCanvas multiplayer={true} socket={socket} log={addLog} />
+                <Log log={log} />
+                <section className="buttons">
 
-                <button onClick={handleLeaveRoom}>Volver</button>
+                    <button onClick={handleStopPlaying}>Volver</button>
+                </section>
             </section>
-        </section>
         )
     }
-    if(currentRoom){
+    if (currentRoom) {
         return (
-            
+
             <div>
                 <h1>Coliseo</h1>
                 <section className="room">
@@ -81,24 +92,19 @@ const Coliseum = ({onEnd,socket,username}) => {
     return (
         <div>
             <h1>Coliseo</h1>
-            <section className="create-room">
-                <label htmlFor="roomName">Nombre de la sala</label>
-                <input
-                    type="text"
-                    name="roomName"
-                    id="roomName"
-                    value={roomName}
-                    onChange={e => setRoomName(e.target.value)}
-                />
-                <button onClick={handleCreateRoom}>Crear sala</button>
-            </section>
+            <CreateRoom onCreate={handleCreateRoom} />
+            <SearchRoom onJoin={handleJoinRoom} />
             <section className="public-rooms">
                 <h2>Salas publicas</h2>
                 <ul>
                     {publicRooms.map(room => (
                         <li key={room.id}>
-                            <button onClick={() => socket.emit("joinRoom", { roomId: room.id, role:"player" })}>
-                                {room.id}
+                            <h3>{room.id}</h3>
+                            <button onClick={() => handleJoinRoom(room.id,"player")}>
+                               Unirse
+                            </button>
+                            <button onClick={() => handleJoinRoom(room.id,"spectator")}>
+                                Espectar
                             </button>
                         </li>
                     ))}

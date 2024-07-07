@@ -46,6 +46,7 @@ export class Player {
             this.action = "attack";
             this.energy -= ATTACK_ENERGY;
 
+            this.log(`👊 ${this.name} ha atacado a ${defender.name}.`);
             if (defender.isDefending) {
                 defender.isDefending = false;
                 defender.action = "idle";
@@ -55,7 +56,6 @@ export class Player {
             defender.health -= ATTACK_DAMAGE;
             defender.health = Math.max(defender.health, 0);
             defender.isHurt = true;
-            this.log(`👊 ${this.name} ha atacado a ${defender.name}.`);
             this.log(`💥 ${defender.name} ha recibido ${ATTACK_DAMAGE} de daño. Vida de ${defender.name}: ${defender.health}.`);
             if (defender.health <= 0) {
                 this.log(`😵 ${defender.name} ha muerto.`);
@@ -96,8 +96,14 @@ export class Player {
         })
     }
 }
-
-async function getRandomPlayers(log, numPlayers, excludedUsername) {
+function getRandomPlayers(log, numPlayers) {
+    const players = [];
+    for (let i = 0; i < numPlayers; i++) {
+        players.push(new Player("Random " + (i + 1), MAX_HEALTH, MAX_ENERGY, false, randomPlay, log));
+    }
+    return players;
+}
+async function getRandomPlayersFromDb(log, numPlayers, excludedUsername) {
     // get a random list of players, excluding the specified user
     const users = await userModel.aggregate([
         { $match: { username: { $ne: excludedUsername } } }, // exclude the specified user
@@ -129,21 +135,23 @@ async function getBestPlayers(log, numPlayers,excludedUsername) {
             {username:"Gepeto",strategy:chatGpt}
         ]
         const difference = numPlayers - players.length;
-        for (let i = 0; i < difference; i++) {
+        for (let i = 0; i < Math.min(difference,bestPlayers.length); i++) {
             players.push(new Player(bestPlayers[i].username, MAX_HEALTH, MAX_ENERGY, false, bestPlayers[i].strategy, log));
         }
     }
     return players;
 }
-export async function createPlayers(log, random = false, numberOfPlayers = 5, username) {
-    if (random) {
-        console.log("numberOfPlayers", numberOfPlayers)
-        const randomPlayers = await getRandomPlayers(log, numberOfPlayers, username);
-        console.log("randomPlayers", randomPlayers)
-        return randomPlayers;
+export async function createPlayers(log, difficulty, numberOfPlayers = 5, username) {
+    switch (difficulty) {
+        case "easy":
+            return getRandomPlayers(log, numberOfPlayers);
+        case "medium":
+            return await getRandomPlayersFromDb(log, numberOfPlayers, username);
+        case "hard":
+            return await getBestPlayers(log, numberOfPlayers, username);
+        default:
+            return getRandomPlayers(log, numberOfPlayers);
     }
-    const players = await getBestPlayers(log, numberOfPlayers, username);
-    return players;
 }
 export function createPlayer(name, playStrategy, log) {
     return new Player(name, MAX_HEALTH, MAX_ENERGY, false, playStrategy, log);

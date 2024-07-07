@@ -2,9 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import Game from '../../gameLogic/game';
 
 const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
-    console.log("strategy", strategy)
     const canvasRef = useRef(null);
-    const [game, setGame] = useState(null);
+    const gameRef = useRef(null);
     const [started, setStarted] = useState(false);
     const [time,setTime] = useState(0);
     
@@ -23,7 +22,7 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
             console.log("simulationResults",data)
             log("Resultados de simulación: ")
             log("Media de turnos por partida: " + parseInt(data.averageTurns));
-            const players = data.results.forEach(player => log(`${player.name}: victorias: ${player.wins}, empates: ${player.draws}, derrotas: ${player.losses}`));
+            data.results.forEach(player => log(`${player.name}: victorias: ${player.wins}, empates: ${player.draws}, derrotas: ${player.losses}`));
             
         })
         socket.on("log", (data) => {
@@ -31,20 +30,28 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
             if(data.log ===""){
                 return
             }
+            if(!data.players){
+                log(data.log);
+                return
+            }
             setTime(data.turnsRemaining)
             log(data.log)
-            if(!game){
+            console.log("game",gameRef.current)
+            if(!gameRef.current){
+                console.log("new game",data)
                 const newGame = new Game(data.players,canvasRef.current);
-                setGame(newGame);
+                gameRef.current = newGame;
                 newGame.draw();
             }
-            else{
-                game.updatePlayers(data.players);
-                game.draw();
-                game.deleteDeadPlayers();
+            else if(data.players?.length > 0){
+                gameRef.current.updatePlayers(data.players);
+                console.log("drawing")
+                gameRef.current.draw();
+                gameRef.current.deleteDeadPlayers();
             }
         })
         return () => {
+            console.log("cleaning up canvas")
             socket.off("log");
             socket.off("simulationResults");
         }
@@ -59,7 +66,7 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
     return (
         <article className="game-canvas">
             <canvas ref={canvasRef} width={800} height={600} />
-            <p>Tiempo restante: {time} s</p>
+            <p>Jugadas restantes: {time}</p>
         </article>
     );
 };

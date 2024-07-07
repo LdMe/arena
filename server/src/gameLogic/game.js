@@ -2,11 +2,12 @@ import { Player } from './player.js';
 import { MAX_TURNS, PLAYER_TIMEOUT, MAX_ENERGY, MAX_HEALTH } from './constants.js';
 
 class Game {
-  constructor(players = [], log = console.log) {
+  constructor(players = [], log = console.log,speed = 1) {
     this.players = players;
     this.ended = false;
     this.log = log;
     this.turnsRemaining = MAX_TURNS * players.length;
+    this.speed = speed;
     this.initPlayers();
   }
 
@@ -95,7 +96,7 @@ class Game {
     const enemies = this.getAlivePlayers().filter(player => player.name !== attacker.name);
     attacker.play(enemies);
 
-    await new Promise(resolve => setTimeout(resolve, PLAYER_TIMEOUT));
+    await new Promise(resolve => setTimeout(resolve, PLAYER_TIMEOUT / this.speed));
     attacker.isTurn = false;
 
     if (this.ended || this.getTurnsRemaining() <= 0) return;
@@ -142,8 +143,13 @@ class Game {
 
   simulateTurn(attacker, alivePlayers) {
     if (attacker.health <= 0) return;
-    const enemies = alivePlayers.filter(player => player !== attacker);
-    attacker.play(enemies);
+    try{
+      const enemies = alivePlayers.filter(player => player !== attacker);
+      attacker.play(enemies);
+    }
+    catch(err){
+      console.error(err);
+    }
   }
 
   endSimulation(jugadas) {

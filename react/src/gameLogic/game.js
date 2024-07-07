@@ -10,9 +10,16 @@ class Game {
     this.background.src = "/sprites/background.png";
     this.loaded = false;
     this.background.onload = () => {
-      this.draw();
+      this.onLoadPlayers();
     }
     this.initPlayers();
+  }
+  async onLoadPlayers() {
+    for (const player of this.players) {
+      await player.onLoad;
+    }
+    this.loaded = true;
+    this.draw();
   }
   shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -45,7 +52,7 @@ class Game {
 
     newPlayers.forEach((player, index) => {
       console.log("player", player);
-      player.action = "idle";
+      //player.action = "idle";
 
       const col = index % cols;
       const row = Math.floor(index / cols);
@@ -82,6 +89,7 @@ class Game {
   drawPlayers = () => {
     const ctx = this.ctx;
     this.players.forEach(player => {
+      console.log("player",player.name,"isTurn",player.isTurn,"isDefending",player.isDefending,"isHurt",player.isHurt,"action",player.action);
       try{
       const { x, y } = player.getSprite();
       ctx.drawImage(player.image, x, y, 512, 512, player.x, player.y, player.width, player.height);
@@ -103,7 +111,6 @@ class Game {
     });
   };
   draw = () => {
-    console.log("drawing")
     this.ctx.drawImage(this.background, 0, 0, this.canvas.width, this.canvas.height);
     this.drawPlayers();
   }
