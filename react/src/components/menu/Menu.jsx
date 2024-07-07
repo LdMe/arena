@@ -14,7 +14,7 @@ const Menu = ({ onEnd }) => {
                     <img src="/sprites/train.png" alt="train" />
                     <h2>Entrenamiento</h2>
                 </article>
-                <article className="menu-card" onClick={() => {}}>
+                <article className="menu-card" onClick={() => onEnd("coliseum")}>
                     <img src="/sprites/coliseum.png" alt="coliseum" />
                     <h2>Coliseo</h2>
                 </article>

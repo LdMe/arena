@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Game from '../../gameLogic/game';
 
-const GameCanvas = ({ strategy,socket,log}) => {
+const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
     console.log("strategy", strategy)
     const canvasRef = useRef(null);
     const [game, setGame] = useState(null);
@@ -14,7 +14,9 @@ const GameCanvas = ({ strategy,socket,log}) => {
         }
         if(!started){
             setStarted(true);
-            socket.emit("startGame",strategy);
+            if(!multiplayer){
+                socket.emit("startGame",strategy);
+            }
         }
         console.log("refreshing")
         socket.on("simulationResults", (data) => {

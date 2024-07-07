@@ -5,8 +5,9 @@ import { createDefaultBlock } from './utils/condition';
 import './App.css'
 import Register from './components/register/Register';
 import Game from './components/game/Game';
-import { login, updateBlocks,getBlocks } from './utils/fetch';
+import { login, updateBlocks, getBlocks } from './utils/fetch';
 import socket from './utils/socket';
+import Coliseum from './components/coliseum/Coliseum';
 function resetBlock(state, action) {
   const defaultBlock = createDefaultBlock();
   const id = action.payload;
@@ -69,13 +70,13 @@ function App() {
     return () => {
       socket.disconnect();
     }
-  }, [userData])
+  }, [])
   useEffect(() => {
     loadBlocks();
   }, [state]);
   const loadBlocks = async () => {
     const newBlocks = await getBlocks();
-    console.log("newBlocks",newBlocks)
+    console.log("newBlocks", newBlocks)
     dispatch({ type: 'SET_BLOCKS', payload: newBlocks });
   }
   const addLog = (text) => {
@@ -84,7 +85,7 @@ function App() {
   const handleSubmitUserData = async (data) => {
     setUserData(data);
     dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
-    //socket.emit("login", { username: data.username });
+    socket.emit("login", { username: data.username });
     handleChangeState("menu")
   };
   const handleCreateStrategy = async () => {
@@ -109,12 +110,15 @@ function App() {
           <Log log={log} /> */}
         </>
       )}
+      {state === "coliseum" && (
+        <Coliseum onEnd={handleChangeState} socket={socket} username={userData.username} />
+      )}
       {state === "builder" && (
         <div className="builder">
           <StrategyBuilder blocks={blocks} dispatch={dispatch} />
           <section className='footer'>
-          <button onClick={handleCreateStrategy}>Guardar</button>
-          <button onClick={() => handleChangeState("menu")}>Volver</button>
+            <button onClick={handleCreateStrategy}>Guardar</button>
+            <button onClick={() => handleChangeState("menu")}>Volver</button>
           </section>
         </div>
       )}

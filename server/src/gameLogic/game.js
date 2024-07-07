@@ -6,12 +6,13 @@ class Game {
     this.players = players;
     this.ended = false;
     this.log = log;
-    this.turnsRemaining = MAX_TURNS;
+    this.turnsRemaining = MAX_TURNS * players.length;
     this.initPlayers();
   }
 
   setPlayers(players) {
     this.players = players;
+    this.turnsRemaining = MAX_TURNS * players.length;
     this.initPlayers();
   }
 
