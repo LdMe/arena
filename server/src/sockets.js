@@ -62,7 +62,7 @@ const createSocketServer = (server) => {
                 }
                 io.to(roomId).emit('updateRoom', rooms[roomId]);
             } else {
-                socket.emit('error', { message: 'Room does not exist' });
+                socket.emit('roomNotFound', { error: 'No existe esta sala' });
             }
         });
         socket.on('leaveRoom', ({ roomId }) => {
@@ -76,7 +76,7 @@ const createSocketServer = (server) => {
                     io.emit('updateRooms', { publicRooms: Object.keys(rooms).filter(roomId => rooms[roomId].isPublic).map(roomId =>  rooms[roomId]) });
                     return;
                 }
-                if (rooms[roomId].owner === socket.username) {
+                if (rooms[roomId].owner === socket.username || !rooms[roomId].players.some(p => p.username === rooms[roomId].owner)) {
                     rooms[roomId].owner = rooms[roomId].players[0].username;
                     console.log(`room ${roomId} owner changed to ${rooms[roomId].owner}`);
                 }

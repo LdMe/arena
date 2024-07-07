@@ -66,6 +66,7 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
     return (
         <article className="game-canvas">
             <canvas ref={canvasRef} width={800} height={600} />
+            <b>{strategy.username}</b>
             <p>Jugadas restantes: {time}</p>
         </article>
     );

@@ -13,7 +13,7 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
 
 
     const start = () => {
-        socket.emit("startGame", { username: userData.username, blocks: userData.blocks,speed});
+        socket.emit("startGame", { username: userData.username, blocks: userData.blocks, speed });
     }
     const addLog = (text) => {
         if (text === log[log.length - 1]) return
@@ -25,15 +25,23 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
     const handleStartGame = () => {
         console.log("log", log)
         setLog([]);
+        setSpeed(speed =>handleSpeed(speed))
+        setNumPlayers(numPlayers =>handleNumPlayers(numPlayers))
         setPlaying(true);
     }
     const handleStopGame = () => {
         socket.emit("stopGame");
-        
+
     }
     const handleExitBattle = () => {
         handleStopGame();
         setPlaying(false);
+    }
+    const handleSpeed = (speed) => {
+        return Math.max(Math.min(speed, 4), 0.5)
+    }
+    const handleNumPlayers = (numPlayers) => {
+        return Math.max(Math.min(numPlayers, 9), 1)
     }
     if (!playing) {
         return (
@@ -47,33 +55,33 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
                             <option value="medium">Gladiator (medio)</option>
                             <option value="hard">Imperator (difícil)</option>
                         </select>
-                        
-                            <>
-                                <label htmlFor="numPlayers">Número de enemigos</label>
-                                <input
-                                    type="range"
-                                    name="numPlayers"
-                                    id="numPlayers"
-                                    value={numPlayers}
-                                    onChange={e => setNumPlayers(e.target.value)}
-                                    min="1"
-                                    max="9"
-                                    step="1"
-                                />
-                                <input type="number" name="numPlayers" id="numPlayers" min="1" max="9" step="1" value={numPlayers} onChange={e => setNumPlayers(e.target.value)} />
-                            </>
-                            <label htmlFor="speed">Velocidad</label>
+
+                        <>
+                            <label htmlFor="numPlayers">Número de enemigos</label>
                             <input
                                 type="range"
-                                name="speed"
-                                id="speed"
-                                value={speed}
-                                onChange={e => setSpeed(e.target.value)}
-                                min="0.5"
-                                max="4"
-                                step="0.5"
+                                name="numPlayers"
+                                id="numPlayers"
+                                value={numPlayers}
+                                onChange={e => setNumPlayers(e.target.value)}
+                                min="1"
+                                max="9"
+                                step="1"
                             />
-                            <input type="number" name="speed" id="speed" min="0.5" max="4" step="0.25" value={speed} onChange={e => setSpeed(e.target.value)} />
+                            <input type="number" name="numPlayers" id="numPlayers" min="1" max="9" step="1" value={numPlayers} onChange={e => setNumPlayers(e.target.value)} />
+                        </>
+                        <label htmlFor="speed">Velocidad</label>
+                        <input
+                            type="range"
+                            name="speed"
+                            id="speed"
+                            value={speed}
+                            onChange={e => setSpeed(e.target.value)}
+                            min="0.5"
+                            max="4"
+                            step="0.5"
+                        />
+                        <input type="number" name="speed" id="speed" min="0.5" max="4" step="0.25" value={speed} onChange={e => setSpeed(e.target.value)} />
                     </form>
 
                 </section>
@@ -87,10 +95,10 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
     }
     return (
         <section className="game">
-            <GameCanvas strategy={{ username: userData.username, blocks, difficulty: difficulty, numPlayers, speed}} socket={socket} log={addLog} />
+            <GameCanvas strategy={{ username: userData.username, blocks, difficulty: difficulty, numPlayers, speed }} socket={socket} log={addLog} />
             <Log log={log} />
             <section className="buttons">
-                {}
+                { }
                 <button onClick={handleStopGame}>Finalizar simulación</button>
                 <button onClick={handleExitBattle}>Volver</button>
             </section>

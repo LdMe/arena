@@ -1,0 +1,22 @@
+.coliseum form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 10%;
+    padding: 1rem;
+}
+
+.coliseum form>select {
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.coliseum .buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 1.2em;
+    padding: 1em;
+    width: 100%;
+    box-sizing: border-box;
+}

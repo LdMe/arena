@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react"
 import GameCanvas from "../game/GameCanvas";
 import Log from "../game/Log";
-import Modal from "../modal/Modal";
 import CreateRoom from "./CreateRoom";
 import SearchRoom from "./SearchRoom";
+import Room from "./Room";
+
+import './Coliseum.css';
+
 const Coliseum = ({ onEnd, socket, username }) => {
     const [roomName, setRoomName] = useState("");
     const [publicRooms, setPublicRooms] = useState([]);
@@ -28,9 +31,13 @@ const Coliseum = ({ onEnd, socket, username }) => {
         return () => {
             socket.off("updateRooms")
             socket.off("updateRoom")
-            socket.emit("leaveRoom", { roomId: currentRoom?.id })
         }
     }, [socket])
+    useEffect(() => {
+        return () => {
+            socket.emit("leaveRoom", { roomId: currentRoom?.id })
+        }
+    }, [])
     const addLog = (text) => {
         setLog(prevLog => [...prevLog, text]);
     }
@@ -40,24 +47,29 @@ const Coliseum = ({ onEnd, socket, username }) => {
     }
     const handleLeaveRoom = () => {
         setPlaying(false);
+        console.log("handleLeaveRoom", currentRoom)
         if (!currentRoom) return
         socket.emit("leaveRoom", { roomId: currentRoom.id })
         setCurrentRoom(null);
     }
     const handleStartRoom = () => {
         console.log("startRoom")
-        socket.emit("startRoom", { roomId: currentRoom.id,speed:1 })
+        socket.emit("startRoom", { roomId: currentRoom.id, speed: 1 })
     }
-    const handleJoinRoom = (roomId,role="player") => {
+    const handleJoinRoom = (roomId, role = "player") => {
         socket.emit("joinRoom", { roomId, role })
     }
     const handleStopPlaying = () => {
         setPlaying(false);
     }
+    const handleGoBack = () => {
+        handleLeaveRoom();
+        onEnd("menu");
+    }
     if (playing) {
         return (
             <section className="game">
-                <GameCanvas multiplayer={true} socket={socket} log={addLog} />
+                <GameCanvas strategy={{ username }} multiplayer={true} socket={socket} log={addLog} />
                 <Log log={log} />
                 <section className="buttons">
 
@@ -68,42 +80,34 @@ const Coliseum = ({ onEnd, socket, username }) => {
     }
     if (currentRoom) {
         return (
-
-            <div>
+            <div className="coliseum">
                 <h1>Coliseo</h1>
-                <section className="room">
-                    <h2>Sala: {currentRoom.id}</h2>
-                    <ul>
-                        {currentRoom.players.map(player => (
-                            <li key={player.id}>
-                                {player.username}
-                            </li>
-                        ))}
-                    </ul>
-                    {currentRoom.owner === username && <button onClick={handleStartRoom}>Comenzar partida</button>}
-                    <button onClick={handleLeaveRoom}>Abandonar</button>
-                </section>
+                <Room room={currentRoom} username={username} handleStartRoom={handleStartRoom} handleLeaveRoom={handleLeaveRoom} />
                 <section className='footer'>
-                    <button onClick={() => onEnd("menu")}>Volver</button>
+                    <button onClick={handleGoBack}>Volver</button>
                 </section>
             </div>
         )
     }
     return (
-        <div>
+        <div className="coliseum">
             <h1>Coliseo</h1>
-            <CreateRoom onCreate={handleCreateRoom} />
-            <SearchRoom onJoin={handleJoinRoom} />
+            <section className="buttons">
+                <CreateRoom onCreate={handleCreateRoom} />
+                <SearchRoom onJoin={handleJoinRoom} socket={socket} />
+            </section>
             <section className="public-rooms">
-                <h2>Salas publicas</h2>
+                <h2>Arenas públicas</h2>
                 <ul>
                     {publicRooms.map(room => (
                         <li key={room.id}>
                             <h3>{room.id}</h3>
-                            <button onClick={() => handleJoinRoom(room.id,"player")}>
-                               Unirse
+                            <p>Jugadores: {room.players.length} / {room.maxPlayers}</p>
+                            <p>Espectadores : {room.spectators?.length}</p>
+                            <button onClick={() => handleJoinRoom(room.id, "player")}>
+                                Unirse
                             </button>
-                            <button onClick={() => handleJoinRoom(room.id,"spectator")}>
+                            <button onClick={() => handleJoinRoom(room.id, "spectator")}>
                                 Espectar
                             </button>
                         </li>
@@ -111,7 +115,7 @@ const Coliseum = ({ onEnd, socket, username }) => {
                 </ul>
             </section>
             <section className='footer'>
-                <button onClick={() => onEnd("menu")}>Volver</button>
+                <button onClick={handleGoBack}>Volver</button>
             </section>
         </div>
     )

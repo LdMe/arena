@@ -48,6 +48,9 @@
     width: 100%;
     height: auto;
 }
+.game-canvas > p {
+    margin: 0;
+}
 
 .log {
     padding: 1rem;
