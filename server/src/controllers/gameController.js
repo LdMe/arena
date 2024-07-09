@@ -1,5 +1,5 @@
 import Game, { simulateGames } from "../gameLogic/game.js";
-import { createPlayers, createPlayer } from "../gameLogic/player.js";
+import { createPlayers, createPlayer, getRandomPlayer } from "../gameLogic/player.js";
 import { generateStrategyCode } from "../utils/strategy.js";
 import userController from "./userController.js";
 
@@ -54,13 +54,12 @@ function processResults(mainGameResult, simulationResults) {
   return sortedStats;
 }
 
-const init = async (strategy, socket = null,multiplayer=false) => {
+const init = async (strategy, socket = null,multiplayer=false,game = null) => {
   console.log("strategy", strategy);
   let players = [];
   const speed = strategy.speed || 1;
-  console.log("speed", speed);
-  const newGame = new Game([],null,speed);
-
+  const newGame =  game || new Game();
+  newGame.setSpeed(speed);
   let log = (...args) => console.log(...args);
   if (socket) {
     log = (...args) => {
@@ -77,6 +76,13 @@ const init = async (strategy, socket = null,multiplayer=false) => {
       if(!user) continue;
       const player = createPlayer(username, generateStrategyCode(user.blocks, true), log);
       players.push(player);
+    }
+    if(strategy.fill){
+      const remaining = strategy.numPlayers - players.length;
+      for(let i = 0; i < remaining; i++){
+        const randomPlayer = getRandomPlayer(log, i);
+        players.push(randomPlayer);
+      } 
     }
   } else {
     switch (strategy.difficulty) {

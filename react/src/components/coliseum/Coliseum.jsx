@@ -72,9 +72,9 @@ const Coliseum = ({ onEnd, socket, username }) => {
         socket.emit("leaveRoom", { roomId: currentRoom.id })
         setCurrentRoom(null);
     }
-    const handleStartRoom = () => {
+    const handleStartRoom = (data) => {
         console.log("startRoom")
-        socket.emit("startRoom", { roomId: currentRoom.id, speed: 1 })
+        socket.emit("startRoom",data)
     }
     const handleJoinRoom = (roomId, role = "player") => {
         socket.emit("joinRoom", { roomId, role })
@@ -103,9 +103,7 @@ const Coliseum = ({ onEnd, socket, username }) => {
             <div className="coliseum">
                 <h1>Coliseo</h1>
                 <Room room={currentRoom} username={username} handleStartRoom={handleStartRoom} handleLeaveRoom={handleLeaveRoom} />
-                <section className='footer'>
-                    <button onClick={handleGoBack}>Volver</button>
-                </section>
+                
             </div>
         )
     }

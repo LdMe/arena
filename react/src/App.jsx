@@ -56,7 +56,7 @@ function App() {
     if (username) {
       socket.emit("login", { username });
       socket.on("login", (data) => {
-        console.log("login", data)
+
         if (!data.error) {
           setUserData({ username, blocks: data.blocks });
           dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
@@ -77,7 +77,7 @@ function App() {
   const loadBlocks = async () => {
     if(!userData.username) return;
     const newBlocks = await getBlocks();
-    console.log("newBlocks", newBlocks)
+
     if(newBlocks.error){
       handleChangeState("register");
     }
@@ -87,7 +87,7 @@ function App() {
     setLog(prevLog => [...prevLog, text]);
   };
   const handleSubmitUserData = async ({ user, isNew }) => {
-    console.log("user", user, isNew)
+
     setUserData(user);
     dispatch({ type: 'SET_BLOCKS', payload: user.blocks });
     socket.emit("login", { username: user.username });
@@ -100,12 +100,12 @@ function App() {
   const handleCreateStrategy = async () => {
     const newBlocks = await updateBlocks(blocks);
     if(newBlocks.error) handleChangeState("register");
-    console.log("newBlocks", newBlocks)
+
     dispatch({ type: 'SET_BLOCKS', payload: newBlocks });
     //handleChangeState("menu");
   }
   const handleChangeState = (newState) => {
-    console.log("handleChangeState", state, newState)
+
     setState(newState);
   }
   return (

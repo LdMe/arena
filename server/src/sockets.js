@@ -2,6 +2,7 @@
 import { Server as socketIo } from 'socket.io';
 import userController from './controllers/userController.js';
 import { init } from './controllers/gameController.js';
+import Game from './gameLogic/game.js';
 
 const createSocketServer = (server) => {
     const io = new socketIo(server, {
@@ -12,7 +13,17 @@ const createSocketServer = (server) => {
     const rooms = {};
     const users = {};
     const getPublicRooms = (rooms) => {
-        return Object.keys(rooms).filter(roomId => rooms[roomId].isPublic).map(roomId =>  rooms[roomId])
+        return Object.keys(rooms).filter(roomId => rooms[roomId].isPublic).map(roomId => rooms[roomId])
+    }
+    const stopRoom = (roomId) => {
+        const room = rooms[roomId];
+        if (room) {
+            console.log("stopRoom", room)
+            if(room.isPlaying){
+                room.game.stop();
+                room.isPlaying = false;
+            }
+        }
     }
     io.on('connection', (socket) => {
         console.log('new connection', socket.id);
@@ -38,7 +49,7 @@ const createSocketServer = (server) => {
             console.log("createRoom", room)
             if (!rooms[roomId]) {
                 const username = socket.username;
-                rooms[roomId] = { owner: username, players: [], spectators: [], isPublic, maxPlayers: room.maxPlayers || 4 ,id: roomId,isPlaying:false};
+                rooms[roomId] = { owner: username, players: [], spectators: [], isPublic, maxPlayers: room.maxPlayers || 4, id: roomId, isPlaying: false };
                 socket.join(roomId);
                 rooms[roomId].players.push({ id: socket.id, username });
                 console.log(`${username} created and joined room ${roomId}`);
@@ -49,7 +60,7 @@ const createSocketServer = (server) => {
             }
         });
         socket.on('getRooms', () => {
-            
+
             socket.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
         });
         socket.on('joinRoom', ({ roomId, role }) => {
@@ -57,11 +68,11 @@ const createSocketServer = (server) => {
                 const username = socket.username;
                 socket.join(roomId);
                 if (role === 'player') {
-                    if(rooms[roomId].players.length >= rooms[roomId].maxPlayers) {
+                    if (rooms[roomId].players.length >= rooms[roomId].maxPlayers) {
                         socket.emit('roomFull', { error: 'La arena ya esta llena' });
                         return;
                     }
-                    if(rooms[roomId].isPlaying) {
+                    if (rooms[roomId].isPlaying) {
                         socket.emit('roomFull', { error: 'La arena ya esta en juego' });
                         return;
                     }
@@ -83,11 +94,12 @@ const createSocketServer = (server) => {
                 socket.leave(roomId);
                 rooms[roomId].players = rooms[roomId].players.filter(p => p.id !== socket.id);
                 rooms[roomId].spectators = rooms[roomId].spectators.filter(s => s.id !== socket.id);
-                if(rooms[roomId].players.length === 0) {
-                    delete rooms[roomId];
+                if (rooms[roomId].players.length === 0) {
+                    stopRoom(roomId);
                     console.log(`room ${roomId} deleted`);
                     io.to(roomId).emit('deleteRoom', null);
                     io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
+                    delete rooms[roomId];
                     return;
                 }
                 if (rooms[roomId].owner === socket.username || !rooms[roomId].players.some(p => p.username === rooms[roomId].owner)) {
@@ -96,27 +108,40 @@ const createSocketServer = (server) => {
                 }
                 io.to(roomId).emit('userLeft', { log: `${socket.username} ha salido` });
 
+                io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
                 io.to(roomId).emit('updateRoom', rooms[roomId]);
             }
         });
-        socket.on('startRoom', async ({ roomId,speed }) => {
-            if (rooms[roomId]) {
-                console.log("starting room", roomId)
-                if(rooms[roomId].isPlaying) {
-                    socket.emit('roomFull', { error: 'La arena ya esta en juego' });
-                    return;
-                }
-                if(rooms[roomId].owner !== socket.username) return;
-                
-                rooms[roomId].isPlaying = true;
-                const users = rooms[roomId].players.map(p => p.username);
-                io.to(roomId).emit('startGame', users);
+        socket.on('startRoom', async ({ roomId, speed, fill }) => {
+            try {
+                if (rooms[roomId]) {
+                    console.log("starting room", roomId)
+                    if (rooms[roomId].isPlaying) {
+                        socket.emit('roomFull', { error: 'La arena ya esta en juego' });
+                        return;
+                    }
+                    if (rooms[roomId].owner !== socket.username) return;
 
-                io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                const players = await init({ usernames: users,speed}, io.to(roomId),true);
-                io.to(roomId).emit('endGame', players);
-                rooms[roomId].isPlaying = false;
+                    rooms[roomId].isPlaying = true;
+                    const users = rooms[roomId].players.map(p => p.username);
+                    io.to(roomId).emit('startGame', users);
+
+                    io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
+                    const game =new Game();
+                    rooms[roomId].game = game;
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    const players = await init({ usernames: users, speed, numPlayers: rooms[roomId].maxPlayers, fill: fill }, io.to(roomId), true,game);
+                    io.to(roomId).emit('endGame', players);
+                    if(rooms[roomId]){
+                        rooms[roomId].isPlaying = false;
+
+                    }
+                    io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
+                }
+            }
+            catch (e) {
+                console.error(e);
+                socket.emit('error', { error: 'Error al iniciar el juego' });
             }
         });
         socket.on('startGame', async (data) => {
@@ -138,11 +163,14 @@ const createSocketServer = (server) => {
                 if (!rooms[roomId].players.find(p => p.id === socket.id)) continue;
                 rooms[roomId].players = rooms[roomId].players.filter(p => p.id !== socket.id);
                 rooms[roomId].spectators = rooms[roomId].spectators.filter(s => s.id !== socket.id);
-                if(rooms[roomId].players.length === 0) {
+                if (rooms[roomId].players.length === 0) {
+                    stopRoom(roomId);
                     delete rooms[roomId];
                     console.log(`room ${roomId} deleted`);
                     return;
                 }
+
+                io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
                 io.to(roomId).emit('updateRoom', rooms[roomId]);
             }
         });

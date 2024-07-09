@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react"
+import ArenaStats from "./ArenaStats";
 
 const Room = ({ room, username, handleStartRoom, handleLeaveRoom }) => {
     const [playing, setPlaying] = useState(false);
 
-    if(playing){
+    const handleStart = ({ speed, fill }) => {
+        handleStartRoom({ roomId: room.id, speed, fill });
+    }
+
+    if (playing) {
 
         return (
             <section className="game">
@@ -28,8 +33,13 @@ const Room = ({ room, username, handleStartRoom, handleLeaveRoom }) => {
                     </li>
                 ))}
             </ul>
-            {room.owner === username && <button onClick={handleStartRoom}>Comenzar partida</button>}
-            <button onClick={handleLeaveRoom}>Abandonar</button>
+            {room.owner === username &&
+                <ArenaStats onSubmit={handleStart} />
+            }
+
+            <section className="footer">
+                <button onClick={handleLeaveRoom}>Abandonar</button>
+            </section>
         </section>
     )
 

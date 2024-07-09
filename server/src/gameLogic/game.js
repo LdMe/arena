@@ -20,6 +20,9 @@ class Game {
   setLog(log) {
     this.log = log;
   }
+  setSpeed(speed) {
+    this.speed = speed;
+  }
 
   shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -65,6 +68,7 @@ class Game {
     let jugadas = 0;
 
     while (this.shouldContinue()) {
+      console.log("is ended", this.ended);
       const alivePlayers = this.getAlivePlayers();
       jugadas++;
 
