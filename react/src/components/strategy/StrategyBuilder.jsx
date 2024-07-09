@@ -20,9 +20,7 @@ function StrategyBuilder({blocks, dispatch}) {
   const deleteBlock = (id) => {
     dispatch({ type: 'DELETE_BLOCK', payload: id });
   };
-  const handleResetBlock = (id) => {
-    dispatch({ type: 'RESET_BLOCK', payload: id });
-  }
+ 
   return (
     <div className="strategy-builder">
       <h2>Construye tu estrategia</h2>
@@ -35,7 +33,6 @@ function StrategyBuilder({blocks, dispatch}) {
           updateBlock={updateBlock} 
           deleteBlock={deleteBlock} 
           moveBlock={handleMoveBlock}
-          resetBlock={handleResetBlock}
         />
       ))}
       <button onClick={addBlock}>Añadir Bloque</button>

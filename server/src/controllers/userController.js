@@ -62,7 +62,7 @@ const register = async (userData) => {
             return { error: "El usuario ya existe", status: 409 }
         }
         const newUser = await getOrCreateUser(userData);
-        const token = jwt.sign({ _id: newUser._id, username: newUser.username }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
+        const token = jwt.sign({ _id: newUser._id, username: newUser.username }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24})
             return { user: newUser, token };
         }
     catch (e) {
@@ -110,7 +110,10 @@ const getBlocks = async (username) => {
 const updateBlocks = async (username, blocks) => {
     console.log("updateBlocks", username, blocks)
     try {
-        return await user.updateOne({ username }, { blocks });
+        
+        await user.updateOne({ username }, { blocks });
+        const newUser = await user.findOne({ username });
+        return  newUser.blocks;
     }
     catch (e) {
         console.error(e);

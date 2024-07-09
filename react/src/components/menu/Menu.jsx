@@ -4,7 +4,6 @@ const Menu = ({ onEnd,username }) => {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("username");
-        localStorage.removeItem("blocks");
         onEnd("register");
     }
     return (

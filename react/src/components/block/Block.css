@@ -1,4 +1,4 @@
-.block-content {
+.blojuck-content {
     height: 100%;
     overflow-y: auto;
 }
@@ -9,4 +9,31 @@
     border: 1px solid #ddd;
     border-radius: 3px;
     background-color: #fafafa;
+}
+.block-edit-buttons{
+    position: absolute;
+    bottom: 0;
+    padding-bottom: 1rem;
+    left : 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    box-sizing: border-box;
+}
+.block-buttons{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.block-buttons > *{
+    width: 30%;
+    display: flex;
+    justify-content: center;
+}
+.block-edit-buttons button{
+    width: 20%;
+    padding: 1rem;
+}
+.condition-item {
+    position: relative;
 }
