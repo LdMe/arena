@@ -1,7 +1,8 @@
 .condition {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-around;
+    gap:1rem;
     
 }
 .condition > select:first-child {
@@ -9,13 +10,14 @@
 }
 .condition > input,
 .condition > select {
-    width: 50%;
+    width: 90%;
     box-sizing: border-box;
 }
 
 @media screen and (min-width: 768px) {
-    .condition > * {
-        width: 25%;
+    .condition > input,
+    .condition > select {
+        width: 45%;
     }
     
 }
