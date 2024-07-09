@@ -99,6 +99,7 @@ const createSocketServer = (server) => {
         socket.on('startGame', async (data) => {
             try {
                 const players = await init(data, socket);
+                socket.emit('endGame', players);
                 console.log("finished", players);
             }
             catch (e) {

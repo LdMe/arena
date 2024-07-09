@@ -23,7 +23,6 @@ function StrategyBuilder({blocks, dispatch}) {
   const handleResetBlock = (id) => {
     dispatch({ type: 'RESET_BLOCK', payload: id });
   }
-  console.log("blocks",blocks)
   return (
     <div className="strategy-builder">
       <h2>Construye tu estrategia</h2>

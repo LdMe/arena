@@ -6,6 +6,10 @@ const Menu = ({ onEnd }) => {
         <div className="menu-container">
             <h1>Menú</h1>
             <section className="menu-grid">
+                <article className="menu-card" onClick={() => onEnd("intro")}>
+                    <img src="/sprites/intro.png" alt="intro" />
+                    <h2>Introducción</h2>
+                </article>
                 <article className="menu-card" onClick={() => onEnd("builder")}>
                     <img src="/sprites/strategy.png" alt="strategy" />
                     <h2>Estrategia</h2>

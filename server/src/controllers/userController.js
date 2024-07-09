@@ -3,107 +3,132 @@ import jwt from "jsonwebtoken";
 import user from "../models/user.js";
 
 const getUserByUsername = async (username) => {
-    try{
+    try {
 
         return await user.findOne({ username });
     }
-    catch(e){
+    catch (e) {
         console.error(e);
-        return  {error: e}
+        return { error: e }
     }
 }
 const getById = async (id) => {
-    try{
+    try {
         return await user.findById(id);
     }
-    catch(e){
+    catch (e) {
         console.error(e);
-        return  {error: e}
+        return { error: e }
     }
 }
 const createUser = async (userData) => {
-    try{
+    try {
         return await user.create(userData);
     }
-    catch(e){
+    catch (e) {
         console.error(e);
-        return  {error: e}
+        return { error: e }
     }
 }
 const login = async (userData) => {
-    const user = await getOrCreateUser(userData);
-    if(user.error){
-        return user
+    try {
+
+
+        const user = await getUserByUsername(userData.username);
+        if (!user) {
+            return { error: "Usuario no encontrado", status: 404 }
+        }
+        if (user.error) {
+            return { error: user.error , status: 500 }
+        }
+        const match = await bcrypt.compare(userData.password, user.password);
+        if (match) {
+            const token = jwt.sign({ _id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
+            return { user, token };
+        }
+        else {
+            return { error: "Contraseña incorrecta", status: 401 }
+        }
     }
-    console.log("login",userData.password,user.password)
-    const match = await bcrypt.compare(userData.password, user.password);
-    if(match){
-        const token = jwt.sign({_id:user._id,username:user.username},process.env.JWT_SECRET,{expiresIn: 60 * 60 * 24})
-        return {user,token};
+    catch (e) {
+        console.error(e);
+        return { error: e, status: 500 }
     }
-    else{
-        return {error: "Contraseña incorrecta",status: 401}
+}
+const register = async (userData) => {
+    try {
+        const user = await getUserByUsername(userData.username);
+        if (user) {
+            return { error: "El usuario ya existe", status: 409 }
+        }
+        const newUser = await getOrCreateUser(userData);
+        const token = jwt.sign({ _id: newUser._id, username: newUser.username }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
+            return { newUser, token };
+        }
+    catch (e) {
+        console.error(e);
+        return { error: e, status: 500 }
     }
 }
 const getOrCreateUser = async (userData) => {
-    try{
+    try {
         const user = await getUserByUsername(userData.username);
-        if(user){
+        if (user) {
             return user;
         }
         return await createUser(userData);
     }
-    catch(e){
+    catch (e) {
         console.error(e);
-        return  {error: e,status: 500}
+        return { error: e, status: 500 }
     }
 }
 
 const updateUser = async (username, userData) => {
-    try{
-        console.log("userData",userData)
+    try {
+        console.log("userData", userData)
         return await user.updateOne({ username }, userData);
     }
-    catch(e){
+    catch (e) {
         console.error(e);
-        return  {error: e}
+        return { error: e }
     }
 }
 const getBlocks = async (username) => {
-    try{
-        const dbUser =  await user.findOne({ username });
-        if(dbUser){
+    try {
+        const dbUser = await user.findOne({ username });
+        if (dbUser) {
             return dbUser.blocks;
         }
-        return {error: "User not found",status: 404}
+        return { error: "User not found", status: 404 }
     }
-    catch(e){
+    catch (e) {
         console.error(e);
-        return  {error: e,status: 500}
+        return { error: e, status: 500 }
     }
 }
 const updateBlocks = async (username, blocks) => {
-    console.log("updateBlocks",username,blocks)
-    try{
+    console.log("updateBlocks", username, blocks)
+    try {
         return await user.updateOne({ username }, { blocks });
     }
-    catch(e){
+    catch (e) {
         console.error(e);
-        return  {error: e,status: 500}
+        return { error: e, status: 500 }
     }
 }
 
 const deleteUser = async (username) => {
-    try{
+    try {
         return await user.deleteOne({ username });
     }
-    catch(e){
+    catch (e) {
         console.error(e);
-        return  {error: e}
+        return { error: e }
     }
 }
 
-const functions ={
+const functions = {
     getUserByUsername,
     getById,
     createUser,
@@ -112,6 +137,7 @@ const functions ={
     updateUser,
     deleteUser,
     getBlocks,
-    updateBlocks
+    updateBlocks,
+    register
 }
 export default functions

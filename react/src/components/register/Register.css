@@ -7,7 +7,7 @@ p.error{
 }
 /* Form Container */
 .register-form {
-    background: #fff;
+    background: #fff9;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -36,7 +36,11 @@ p.error{
     font-weight: bold;
     color: #555;
 }
-
+.register-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 .register-form input[type="text"],
 .register-form input[type="password"] {
     padding: 10px;

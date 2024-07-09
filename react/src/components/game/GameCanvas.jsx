@@ -39,7 +39,7 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
             console.log("game",gameRef.current)
             if(!gameRef.current){
                 console.log("new game",data)
-                const newGame = new Game(data.players,canvasRef.current);
+                const newGame = new Game(data.players,canvasRef.current,multiplayer);
                 gameRef.current = newGame;
                 newGame.draw();
             }

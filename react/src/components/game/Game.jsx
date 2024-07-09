@@ -9,12 +9,19 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
     const [numPlayers, setNumPlayers] = useState(5);
     const [playing, setPlaying] = useState(false);
     const [speed, setSpeed] = useState(1);
-    const [game, setGame] = useState(null);
+    const [gameEnded, setGameEnded] = useState(false);
 
 
-    const start = () => {
-        socket.emit("startGame", { username: userData.username, blocks: userData.blocks, speed });
-    }
+    useEffect(() => {
+        socket.on("endGame", () => {
+            setGameEnded(true);
+        })
+
+        return () => {
+            socket.off("endGame");
+        }
+
+    }, [])
     const addLog = (text) => {
         if (text === log[log.length - 1]) return
         setLog(prevLog => [...prevLog, text]);
@@ -24,6 +31,7 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
     }
     const handleStartGame = () => {
         console.log("log", log)
+        setGameEnded(false);
         setLog([]);
         setSpeed(speed =>handleSpeed(speed))
         setNumPlayers(numPlayers =>handleNumPlayers(numPlayers))
@@ -31,6 +39,7 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
     }
     const handleStopGame = () => {
         socket.emit("stopGame");
+        setGameEnded(true);
 
     }
     const handleExitBattle = () => {
@@ -98,9 +107,11 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
             <GameCanvas strategy={{ username: userData.username, blocks, difficulty: difficulty, numPlayers, speed }} socket={socket} log={addLog} />
             <Log log={log} />
             <section className="buttons">
-                { }
-                <button onClick={handleStopGame}>Finalizar simulación</button>
+                { gameEnded?
                 <button onClick={handleExitBattle}>Volver</button>
+                :
+                <button onClick={handleStopGame}>Finalizar simulación</button>
+                }
             </section>
         </section>
     )

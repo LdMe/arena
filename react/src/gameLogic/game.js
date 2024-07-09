@@ -2,12 +2,13 @@ import { Player } from './player';
 import { MAX_EXECUTION_TIME, PLAYER_TIMEOUT, TURN_TIMEOUT } from './constants';
 
 class Game {
-  constructor(players, canvas) {
+  constructor(players, canvas,multiplayer) {
     this.players = players.map((player,index) => new Player(player.name, player.health, player.energy, player.isDefending, index));
     this.canvas = canvas
     this.ctx = canvas.getContext ? canvas.getContext("2d") : null;
     this.background = new Image();
-    this.background.src = "/sprites/background.png";
+    this.multiplayer = multiplayer
+    this.background.src = multiplayer ? "/sprites/background.png": "/sprites/background_train.png";
     this.loaded = false;
     this.background.onload = () => {
       this.onLoadPlayers();
@@ -93,7 +94,7 @@ class Game {
       try{
       const { x, y } = player.getSprite();
       ctx.drawImage(player.image, x, y, 512, 512, player.x, player.y, player.width, player.height);
-      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      ctx.fillStyle = "rgba(255,255,255,0.9)";
       ctx.fillRect(player.x, player.y + player.height - 5, player.width, 60);
       ctx.fillStyle = "black";
       ctx.font = "18px Arial";

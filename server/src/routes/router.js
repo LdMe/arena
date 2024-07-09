@@ -17,6 +17,20 @@ router.post("/login", async (req, res) => {
         return res.status(500).json({ error: e });
     }
 });
+router.post("/register", async (req, res) => {
+    try {
+        const data = await userController.register(req.body);
+        if (data && !data.error) {
+            return res.json(data);
+        }
+        if (data && data.error) {
+            return res.status(data.status).json({ error: data.error });
+        }
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: e });
+    }
+});
 router.get("/blocks", isAuthenticated,async (req, res) => {
     try {
         const blocks = await userController.getBlocks(req.user.username);

@@ -8,6 +8,7 @@ import Game from './components/game/Game';
 import { login, updateBlocks, getBlocks } from './utils/fetch';
 import socket from './utils/socket';
 import Coliseum from './components/coliseum/Coliseum';
+import Introduction from './components/intro/Intro';
 function resetBlock(state, action) {
   const defaultBlock = createDefaultBlock();
   const id = action.payload;
@@ -112,6 +113,9 @@ function App() {
       )}
       {state === "coliseum" && (
         <Coliseum onEnd={handleChangeState} socket={socket} username={userData.username} />
+      )}
+      {state === "intro" && (
+        <Introduction onEnd={handleChangeState} />
       )}
       {state === "builder" && (
         <div className="builder">

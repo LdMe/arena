@@ -1,0 +1,15 @@
+
+.intro-content {
+    width: 95%;
+    margin : 0 auto;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: justify;
+    background-color:#fff8dcbb;
+    height:90%;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+.introduction {
+    height: 100%;
+}
