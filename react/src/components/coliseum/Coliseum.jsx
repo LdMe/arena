@@ -4,7 +4,6 @@ import Log from "../game/Log";
 import CreateRoom from "./CreateRoom";
 import SearchRoom from "./SearchRoom";
 import Room from "./Room";
-import Alert from "../alert/Alert";
 import './Coliseum.css';
 
 const Coliseum = ({ onEnd, socket, username }) => {
