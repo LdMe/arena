@@ -5,11 +5,16 @@ import { saveToken } from "../../utils/local";
 const Register = ({ onSubmit }) => {
     const [data, setData] = useState({
         username: '',
-        password: ''
+        password: '',
+        saveSession: false
     })
     const [isRegistering, setIsRegistering] = useState(false)
     const [error, setError] = useState(null)
     const handleChange = (e) => {
+        if (e.target.name === 'saveSession') {
+            setData({ ...data, [e.target.name]: e.target.checked })
+            return;
+        }
         setData({ ...data, [e.target.name]: e.target.value })
     }
     const handleSubmit = async (e) => {
@@ -32,11 +37,12 @@ const Register = ({ onSubmit }) => {
             setError(result.error)
             return
         }
-        localStorage.setItem('username', data.username)
+        if (data.saveSession) {
+            localStorage.setItem('username', data.username)
+        }
         saveToken(result.token)
         const isNew = isRegistering;
-        console.log("user pre", result)
-        onSubmit({user:result.user,isNew})
+        onSubmit({ user: result.user, isNew })
     }
     const handleChangeStatus = () => {
         setIsRegistering(!isRegistering)
@@ -56,9 +62,11 @@ const Register = ({ onSubmit }) => {
                     <input type="text" name="username" value={data.username} onChange={handleChange} />
                     <label htmlFor='password'>Contraseña:</label>
                     <input type="password" name="password" value={data.password} onChange={handleChange} />
+                    <label htmlFor="saveSession">Guardar sesión</label>
+                    <input type="checkbox" name="saveSession" checked={data.saveSession} onChange={handleChange} />
                     <section className="register-buttons">
                         <button type="submit">{isRegistering ? 'Registrarse' : 'Entrar'}</button>
-                        <p>{isRegistering  ? "¿Ya tienes tu gladiador?" : "¿No tienes gladiador?"}</p>
+                        <p>{isRegistering ? "¿Ya tienes tu gladiador?" : "¿No tienes gladiador?"}</p>
                         <button type="button" onClick={handleChangeStatus}>{isRegistering ? 'Entrar' : 'Registrarse'}</button>
                     </section>
                 </form>

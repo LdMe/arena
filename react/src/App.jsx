@@ -77,6 +77,9 @@ function App() {
         if (!data.error) {
           setUserData({ username, blocks: data.blocks });
           dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
+          if (state === "register") {
+            setState("menu");
+          }
         }
       })
     }
@@ -97,7 +100,7 @@ function App() {
     setLog(prevLog => [...prevLog, text]);
   };
   const handleSubmitUserData = async ({ user, isNew }) => {
-    console.log("user", user,isNew)
+    console.log("user", user, isNew)
     setUserData(user);
     dispatch({ type: 'SET_BLOCKS', payload: user.blocks });
     socket.emit("login", { username: user.username });
@@ -112,7 +115,7 @@ function App() {
     handleChangeState("menu");
   }
   const handleChangeState = (newState) => {
-    console.log("handleChangeState", state,newState)
+    console.log("handleChangeState", state, newState)
     setState(newState);
   }
   return (
