@@ -98,8 +98,8 @@ const createSocketServer = (server) => {
                     stopRoom(roomId);
 
                     io.to(roomId).emit('deleteRoom', null);
-                    io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
                     delete rooms[roomId];
+                    io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
                     return;
                 }
                 if (rooms[roomId].owner === socket.username || !rooms[roomId].players.some(p => p.username === rooms[roomId].owner)) {

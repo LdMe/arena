@@ -1,0 +1,20 @@
+.condition {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    
+}
+.condition > select:first-child {
+    width: 100%;
+}
+.condition > * {
+    width: 50%;
+    box-sizing: border-box;
+}
+
+@media screen and (min-width: 768px) {
+    .condition > * {
+        width: 25%;
+    }
+    
+}

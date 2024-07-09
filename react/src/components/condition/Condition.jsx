@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { updateCondition as update } from "../utils/condition";
+import { updateCondition as update } from "../../utils/condition";
 
+import './Condition.css';
 function Condition({ condition, updateCondition }) {
     const renderConditionContent = () => {
         switch (condition.type) {
@@ -28,7 +29,7 @@ function Condition({ condition, updateCondition }) {
 }
 function ComparisonCondition({ condition, updateCondition }) {
     return (
-        <div>
+        <>
             <select
                 value={condition.target || 'self'}
                 onChange={e => updateCondition({ target: e.target.value })}
@@ -81,7 +82,7 @@ function ComparisonCondition({ condition, updateCondition }) {
                     onChange={e => updateCondition({ value: e.target.value })}
                 />
             )}
-        </div>
+        </>
     );
 }
 

@@ -27,7 +27,9 @@ body{
 }
 input,select,option {
   color: black;
-  background-color: rgb(252, 252, 220);
+  background-color: rgb(252, 248, 220);
+  padding: 0.5rem;
+  text-align: center;
 }
 button {
   color: black;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Condition from "../Condition";
+import Condition from "../condition/Condition";
 import Action from "../Action";
 import Modal from "../modal/Modal";
 import './Block.css';

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Condition from "../Condition"
+import Condition from "../condition/Condition"
 import Action from "../Action"
 import { createDefaultCondition, updateCondition, createDefaultBlock } from "../../utils/condition";
 import { FaTrash } from "react-icons/fa";
