@@ -18,7 +18,7 @@ const createSocketServer = (server) => {
     const stopRoom = (roomId) => {
         const room = rooms[roomId];
         if (room) {
-            console.log("stopRoom", room)
+
             if(room.isPlaying){
                 room.game.stop();
                 room.isPlaying = false;
@@ -26,15 +26,15 @@ const createSocketServer = (server) => {
         }
     }
     io.on('connection', (socket) => {
-        console.log('new connection', socket.id);
+
 
         socket.on('login', async (data) => {
             try {
-                console.log(`user ${data.username} logged in`);
+
                 socket.username = data.username;
                 const user = await userController.getOrCreateUser(data);
                 if (user) {
-                    console.log("user exists", user)
+
                     return socket.emit('login', user);
                 }
             }
@@ -46,13 +46,13 @@ const createSocketServer = (server) => {
         // create a room and join it
         socket.on('createRoom', (room) => {
             const { roomId, isPublic } = room;
-            console.log("createRoom", room)
+
             if (!rooms[roomId]) {
                 const username = socket.username;
                 rooms[roomId] = { owner: username, players: [], spectators: [], isPublic, maxPlayers: room.maxPlayers || 4, id: roomId, isPlaying: false };
                 socket.join(roomId);
                 rooms[roomId].players.push({ id: socket.id, username });
-                console.log(`${username} created and joined room ${roomId}`);
+
                 io.to(roomId).emit('updateRoom', rooms[roomId]);
                 io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
             } else {
@@ -77,10 +77,10 @@ const createSocketServer = (server) => {
                         return;
                     }
                     rooms[roomId].players.push({ id: socket.id, username });
-                    console.log(`${username} joined room ${roomId} as player`);
+
                 } else if (role === 'spectator') {
                     rooms[roomId].spectators.push({ id: socket.id, username });
-                    console.log(`${username} joined room ${roomId} as spectator`);
+
                 }
 
                 io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
@@ -96,7 +96,7 @@ const createSocketServer = (server) => {
                 rooms[roomId].spectators = rooms[roomId].spectators.filter(s => s.id !== socket.id);
                 if (rooms[roomId].players.length === 0) {
                     stopRoom(roomId);
-                    console.log(`room ${roomId} deleted`);
+
                     io.to(roomId).emit('deleteRoom', null);
                     io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
                     delete rooms[roomId];
@@ -104,7 +104,7 @@ const createSocketServer = (server) => {
                 }
                 if (rooms[roomId].owner === socket.username || !rooms[roomId].players.some(p => p.username === rooms[roomId].owner)) {
                     rooms[roomId].owner = rooms[roomId].players[0].username;
-                    console.log(`room ${roomId} owner changed to ${rooms[roomId].owner}`);
+
                 }
                 io.to(roomId).emit('userLeft', { log: `${socket.username} ha salido` });
 
@@ -115,7 +115,7 @@ const createSocketServer = (server) => {
         socket.on('startRoom', async ({ roomId, speed, fill }) => {
             try {
                 if (rooms[roomId]) {
-                    console.log("starting room", roomId)
+
                     if (rooms[roomId].isPlaying) {
                         socket.emit('roomFull', { error: 'La arena ya esta en juego' });
                         return;
@@ -148,7 +148,7 @@ const createSocketServer = (server) => {
             try {
                 const players = await init(data, socket);
                 socket.emit('endGame', players);
-                console.log("finished", players);
+
             }
             catch (e) {
                 console.error(e);
@@ -157,7 +157,7 @@ const createSocketServer = (server) => {
 
 
         socket.on('disconnect', () => {
-            console.log('disconnected', socket.id);
+
             // Aquí deberías manejar la lógica para quitar el usuario de la sala correspondiente.
             for (const roomId in rooms) {
                 if (!rooms[roomId].players.find(p => p.id === socket.id)) continue;
@@ -166,7 +166,7 @@ const createSocketServer = (server) => {
                 if (rooms[roomId].players.length === 0) {
                     stopRoom(roomId);
                     delete rooms[roomId];
-                    console.log(`room ${roomId} deleted`);
+
                     return;
                 }
 

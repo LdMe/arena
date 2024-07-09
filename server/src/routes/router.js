@@ -45,7 +45,7 @@ router.get("/blocks", isAuthenticated,async (req, res) => {
 
 router.put("/blocks", isAuthenticated,async (req, res) => {
     try {
-        console.log("req.body", req.body)
+
         const blocks = await userController.updateBlocks(req.user.username, req.body);
         if (blocks) {
             return res.json(blocks);

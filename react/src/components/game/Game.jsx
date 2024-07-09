@@ -30,7 +30,7 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
         setDifficulty(e.target.value)
     }
     const handleStartGame = () => {
-        console.log("log", log)
+
         setGameEnded(false);
         setLog([]);
         setSpeed(speed =>handleSpeed(speed))

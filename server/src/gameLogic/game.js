@@ -68,7 +68,7 @@ class Game {
     let jugadas = 0;
 
     while (this.shouldContinue()) {
-      console.log("is ended", this.ended);
+
       const alivePlayers = this.getAlivePlayers();
       jugadas++;
 

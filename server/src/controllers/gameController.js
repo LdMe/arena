@@ -55,7 +55,7 @@ function processResults(mainGameResult, simulationResults) {
 }
 
 const init = async (strategy, socket = null,multiplayer=false,game = null) => {
-  console.log("strategy", strategy);
+
   let players = [];
   const speed = strategy.speed || 1;
   const newGame =  game || new Game();
@@ -63,7 +63,7 @@ const init = async (strategy, socket = null,multiplayer=false,game = null) => {
   let log = (...args) => console.log(...args);
   if (socket) {
     log = (...args) => {
-      console.log(...args);
+
       socket.emit("log", { log: [...args], players, turnsRemaining: newGame.turnsRemaining });
     };
   }
@@ -92,7 +92,7 @@ const init = async (strategy, socket = null,multiplayer=false,game = null) => {
     players = await createPlayers(log, strategy.difficulty, strategy.numPlayers, strategy.username);
     
     const newPlayer = createPlayer(strategy.username, generateStrategyCode(strategy.blocks, true), log);
-    console.log("newPlayer", newPlayer);
+
     players.push(newPlayer);
     if (socket) {
       socket.on("stopGame", () => {

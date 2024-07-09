@@ -86,7 +86,7 @@ const getOrCreateUser = async (userData) => {
 
 const updateUser = async (username, userData) => {
     try {
-        console.log("userData", userData)
+
         return await user.updateOne({ username }, userData);
     }
     catch (e) {
@@ -108,7 +108,7 @@ const getBlocks = async (username) => {
     }
 }
 const updateBlocks = async (username, blocks) => {
-    console.log("updateBlocks", username, blocks)
+
     try {
         
         await user.updateOne({ username }, { blocks });

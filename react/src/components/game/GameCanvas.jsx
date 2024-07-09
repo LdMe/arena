@@ -17,16 +17,16 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
                 socket.emit("startGame",strategy);
             }
         }
-        console.log("refreshing")
+
         socket.on("simulationResults", (data) => {
-            console.log("simulationResults",data)
+
             log("Resultados de simulación: ")
             log("Media de turnos por partida: " + parseInt(data.averageTurns));
             data.results.forEach(player => log(`${player.name}: victorias: ${player.wins}, empates: ${player.draws}, derrotas: ${player.losses}`));
             
         })
         socket.on("log", (data) => {
-            console.log("log",data)
+
             if(data.log ===""){
                 return
             }
@@ -36,22 +36,22 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
             }
             setTime(data.turnsRemaining)
             log(data.log)
-            console.log("game",gameRef.current)
+
             if(!gameRef.current){
-                console.log("new game",data)
+
                 const newGame = new Game(data.players,canvasRef.current,multiplayer);
                 gameRef.current = newGame;
                 newGame.draw();
             }
             else if(data.players?.length > 0){
                 gameRef.current.updatePlayers(data.players);
-                console.log("drawing")
+
                 gameRef.current.draw();
                 gameRef.current.deleteDeadPlayers();
             }
         })
         return () => {
-            console.log("cleaning up canvas")
+
             socket.off("log");
             socket.off("simulationResults");
         }

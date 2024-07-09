@@ -11,11 +11,11 @@ const SearchRoom = ({ onJoin, socket }) => {
     }
     useEffect(() => {
         socket.on("roomNotFound", (data) => {
-            console.log("roomNotFound", data)
+
             setError(data.error)
         })
         socket.on("roomFull", (data) => {
-            console.log("roomFull", data)
+
             setError(data.error)
         })
         return () => {

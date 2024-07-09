@@ -20,7 +20,7 @@ const CreateRoom = ({ onCreate, socket }) => {
     }
     useEffect(() => {
         socket.on("roomExists", (data) => {
-            console.log("roomExists", data)
+
             setError(data.error)
         })
         return () => {

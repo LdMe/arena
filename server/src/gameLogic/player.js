@@ -128,7 +128,7 @@ async function getBestPlayers(log, numPlayers, excludedUsername) {
     const users = await userModel.find({ username: { $ne: excludedUsername }, won: { $gt: 0 }, draw: { $gt: 0 } }).sort({ won: -1, draw: -1 }).limit(numPlayers);
     const players = users.map((user) => new Player(user.username, MAX_HEALTH, MAX_ENERGY, false, generateStrategyCode(user.blocks, true), log));
 
-    console.log("players", players)
+
     if (players.length < numPlayers) {
         const bestPlayers = [
             { username: "Callo Pie", strategy: grupoAzul },

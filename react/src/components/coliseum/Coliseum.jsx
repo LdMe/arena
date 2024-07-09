@@ -16,16 +16,16 @@ const Coliseum = ({ onEnd, socket, username }) => {
     useEffect(() => {
         socket.emit("getRooms")
         socket.on("updateRooms", (data) => {
-            console.log("updateRooms", data)
+
             setPublicRooms(data.publicRooms)
         })
         socket.on("updateRoom", (data) => {
-            console.log("updateRoom", data)
+
             setCurrentRoom(data)
             if(data.isPlaying) setPlaying(true)
         })
         socket.on("startGame", (data) => {
-            console.log("startGame", data)
+
             setPlaying(true)
         })
         socket.on("log", (data) => {
@@ -46,7 +46,7 @@ const Coliseum = ({ onEnd, socket, username }) => {
     }, [socket])
     useEffect(() => {
         socket.on("deleteRoom", (data) => {
-            console.log("deleteRoom", data)
+
             setCurrentRoom(null)
         })
         return () => {
@@ -62,18 +62,18 @@ const Coliseum = ({ onEnd, socket, username }) => {
         setLog(prevLog => [...prevLog, text]);
     }
     const handleCreateRoom = (room) => {
-        console.log("createRoom", room)
+
         socket.emit("createRoom", room)
     }
     const handleLeaveRoom = () => {
         setPlaying(false);
-        console.log("handleLeaveRoom", currentRoom)
+
         if (!currentRoom) return
         socket.emit("leaveRoom", { roomId: currentRoom.id })
         setCurrentRoom(null);
     }
     const handleStartRoom = (data) => {
-        console.log("startRoom")
+
         socket.emit("startRoom",data)
     }
     const handleJoinRoom = (roomId, role = "player") => {

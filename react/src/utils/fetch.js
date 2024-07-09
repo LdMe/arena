@@ -49,7 +49,7 @@ const getBlocks = async () => {
     return result;
 }
 const updateBlocks = async (blocks) => {
-    console.log("updateBlocks", blocks)
+
     const result = await fetchData("/blocks", "put", blocks);
     return result;
 }

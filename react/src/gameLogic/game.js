@@ -52,7 +52,7 @@ class Game {
     }
 
     newPlayers.forEach((player, index) => {
-      console.log("player", player);
+
       //player.action = "idle";
 
       const col = index % cols;
@@ -72,16 +72,16 @@ class Game {
     const newPlayers = [];
     playersData.forEach((playerData, index) => {
       if (playerData) {
-        console.log("playerData", playerData);
+
         const player = this.players.find(p => p.name === playerData.name);
-        console.log("player found", player);
+
         if (player) {
         player.update(playerData);
         newPlayers.push(player);
         }
       }
     });
-    console.log("newPlayers", newPlayers);
+
     this.players = newPlayers;
   }
   deleteDeadPlayers = () => {
@@ -90,7 +90,7 @@ class Game {
   drawPlayers = () => {
     const ctx = this.ctx;
     this.players.forEach(player => {
-      console.log("player",player.name,"isTurn",player.isTurn,"isDefending",player.isDefending,"isHurt",player.isHurt,"action",player.action);
+
       try{
       const { x, y } = player.getSprite();
       ctx.drawImage(player.image, x, y, 512, 512, player.x, player.y, player.width, player.height);
@@ -106,7 +106,7 @@ class Game {
       ctx.fillText(`Energia: ${player.energy}`, player.x + player.width / 2, player.y + player.height + 50);
       player.isHurt = false;
       }catch(e){
-        console.log("player with error",player)
+
         console.error(e);
       }
     });

@@ -17,7 +17,7 @@ export class Player {
         this.isDefending = isDefending;
 
         const image = getSprite(index);
-        console.log("image src,index",image,index)
+
         this.image = new Image();
         this.image.src = image.src || image;
         this.onLoad = new Promise(resolve => {

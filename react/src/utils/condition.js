@@ -34,7 +34,7 @@ const createDefaultCondition = (type, depth = 0) => {
 
 
 /* const updateCondition = (condition, updates) => {
-    console.log("updates", updates)
+
     if (updates.type === 'composite') {
         // Si estamos cambiando a una condición anidada, inicializamos las subcondiciones
         return {
@@ -68,7 +68,7 @@ const createDefaultCondition = (type, depth = 0) => {
     return {...condition, ...updates };
 } */
 const updateCondition = (condition, updates) => {
-    console.log("updates", updates)
+
     // Si estamos cambiando a una condición anidada, inicializamos las subcondiciones
     if (updates.type === 'composite') {
         return {
@@ -100,7 +100,7 @@ const updateCondition = (condition, updates) => {
     }
 
     const newCondition = { ...condition, ...updates };
-    console.log("newCondition", newCondition)
+
     return newCondition;
 };
 
