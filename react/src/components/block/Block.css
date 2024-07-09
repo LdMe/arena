@@ -1,5 +1,5 @@
-.blojuck-content {
-    height: 100%;
+.block-content {
+    height: 90%;
     overflow-y: auto;
 }
 /* Action Styles */
@@ -31,7 +31,7 @@
     justify-content: center;
 }
 .block-edit-buttons button{
-    width: 20%;
+    min-width: 20%;
     padding: 1rem;
 }
 .condition-item {

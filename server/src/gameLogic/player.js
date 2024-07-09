@@ -106,7 +106,7 @@ function getRandomPlayers(log, numPlayers) {
 async function getRandomPlayersFromDb(log, numPlayers, excludedUsername) {
     // get a random list of players, excluding the specified user
     const users = await userModel.aggregate([
-        { $match: { username: { $ne: excludedUsername } } }, // exclude the specified user
+        { $match: { username: { $ne: excludedUsername }, won: { $gt: 0 }, draw: { $gt: 0 } } }, // exclude the specified user
         { $sample: { size: parseInt(numPlayers) } }
     ]);
 

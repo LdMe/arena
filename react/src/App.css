@@ -42,7 +42,6 @@ button {
 
 .absolute {
   position:absolute;
-  z-index: 100;
 }
 .top {
   top:0.5rem;
