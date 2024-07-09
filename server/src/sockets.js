@@ -121,7 +121,10 @@ const createSocketServer = (server) => {
                         return;
                     }
                     if (rooms[roomId].owner !== socket.username) return;
-
+                    if(rooms[roomId].players.length < 2){
+                        socket.emit('roomFull', { error: 'La arena debe tener al menos 2 jugadores' });
+                        return;
+                    }
                     rooms[roomId].isPlaying = true;
                     const users = rooms[roomId].players.map(p => p.username);
                     io.to(roomId).emit('startGame', users);

@@ -34,7 +34,7 @@ const Room = ({ room, username, handleStartRoom, handleLeaveRoom }) => {
                 ))}
             </ul>
             {room.owner === username &&
-                <ArenaStats onSubmit={handleStart} />
+                <ArenaStats onSubmit={handleStart} disabled={room.players.length < 2} />
             }
 
             <section className="footer">
