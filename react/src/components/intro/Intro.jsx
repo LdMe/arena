@@ -31,7 +31,7 @@ const Introduction = ({ onEnd }) => {
           <h3>Estrategia</h3>
           <p>La verdadera clave de la victoria está en tu estrategia. Antes del combate, deberás crear una serie de bloques estratégicos. Cada bloque consta de una o varias condiciones y una acción a realizar si esas condiciones se cumplen.</p>
           <ul>
-            <li>Las condiciones pueden ser simples o compuestas.</li>
+            <li>Las condiciones pueden ser simples, como "si mi salud es menor que 50", o compuestas, combinando varias condiciones con "y" u "o". Por ejemplo: "si mi energía es menor que 30 Y la salud del enemigo es mayor que la mía".</li>
             <li>Los bloques se evalúan en orden, ejecutando solo la primera acción cuyas condiciones se cumplan.</li>
           </ul>
         </section>
