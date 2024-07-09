@@ -38,7 +38,8 @@ class Game {
   }
 
   stop() {
-    this.log("Game stopped");
+    if(this.ended) return
+    this.log("Batalla finalizada.");
     this.ended = true;
   }
 

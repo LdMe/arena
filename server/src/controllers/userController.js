@@ -63,7 +63,7 @@ const register = async (userData) => {
         }
         const newUser = await getOrCreateUser(userData);
         const token = jwt.sign({ _id: newUser._id, username: newUser.username }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
-            return { newUser, token };
+            return { user: newUser, token };
         }
     catch (e) {
         console.error(e);

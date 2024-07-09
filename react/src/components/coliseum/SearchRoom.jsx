@@ -14,6 +14,10 @@ const SearchRoom = ({ onJoin, socket }) => {
             console.log("roomNotFound", data)
             setError(data.error)
         })
+        socket.on("roomFull", (data) => {
+            console.log("roomFull", data)
+            setError(data.error)
+        })
         return () => {
             socket.off("roomNotFound")
         }

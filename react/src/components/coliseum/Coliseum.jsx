@@ -4,15 +4,15 @@ import Log from "../game/Log";
 import CreateRoom from "./CreateRoom";
 import SearchRoom from "./SearchRoom";
 import Room from "./Room";
-
+import Alert from "../alert/Alert";
 import './Coliseum.css';
 
 const Coliseum = ({ onEnd, socket, username }) => {
-    const [roomName, setRoomName] = useState("");
     const [publicRooms, setPublicRooms] = useState([]);
     const [currentRoom, setCurrentRoom] = useState(null);
     const [playing, setPlaying] = useState(false);
     const [log, setLog] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         socket.emit("getRooms")
@@ -23,16 +23,37 @@ const Coliseum = ({ onEnd, socket, username }) => {
         socket.on("updateRoom", (data) => {
             console.log("updateRoom", data)
             setCurrentRoom(data)
+            if(data.isPlaying) setPlaying(true)
         })
         socket.on("startGame", (data) => {
             console.log("startGame", data)
             setPlaying(true)
         })
+        socket.on("log", (data) => {
+            if(!playing){
+                setPlaying(true)
+            }
+        })
+        socket.on("roomFull", (data) => {
+            setError(data.error)
+        })
         return () => {
             socket.off("updateRooms")
             socket.off("updateRoom")
+            socket.off("startGame")
+            socket.off("log")
+            socket.off("roomFull")
         }
     }, [socket])
+    useEffect(() => {
+        socket.on("deleteRoom", (data) => {
+            console.log("deleteRoom", data)
+            setCurrentRoom(null)
+        })
+        return () => {
+            socket.off("deleteRoom")
+        }
+    },[currentRoom])
     useEffect(() => {
         return () => {
             socket.emit("leaveRoom", { roomId: currentRoom?.id })
@@ -93,11 +114,13 @@ const Coliseum = ({ onEnd, socket, username }) => {
         <div className="coliseum">
             <h1>Coliseo</h1>
             <section className="buttons">
-                <CreateRoom onCreate={handleCreateRoom} />
+                <CreateRoom onCreate={handleCreateRoom}  socket={socket}/>
                 <SearchRoom onJoin={handleJoinRoom} socket={socket} />
             </section>
             <section className="public-rooms">
                 <h2>Arenas públicas</h2>
+
+                <p className="error">{error}</p>
                 <ul>
                     {publicRooms.map(room => (
                         <li key={room.id}>

@@ -38,6 +38,7 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
         setPlaying(true);
     }
     const handleStopGame = () => {
+        if(gameEnded) return
         socket.emit("stopGame");
         setGameEnded(true);
 

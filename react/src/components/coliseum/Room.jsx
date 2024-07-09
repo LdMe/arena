@@ -1,7 +1,21 @@
-
+import { useState, useEffect } from "react"
 
 const Room = ({ room, username, handleStartRoom, handleLeaveRoom }) => {
+    const [playing, setPlaying] = useState(false);
 
+    if(playing){
+
+        return (
+            <section className="game">
+                <GameCanvas strategy={{ username }} multiplayer={true} socket={socket} log={addLog} />
+                <Log log={log} />
+                <section className="buttons">
+
+                    <button onClick={handleStopPlaying}>Volver</button>
+                </section>
+            </section>
+        )
+    }
     return (
         <section className="room">
             <h2>Arena: {room.id}</h2>

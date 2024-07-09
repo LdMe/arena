@@ -32,9 +32,11 @@ const Register = ({ onSubmit }) => {
             setError(result.error)
             return
         }
-
+        localStorage.setItem('username', data.username)
         saveToken(result.token)
-        onSubmit(result.user)
+        const isNew = isRegistering;
+        console.log("user pre", result)
+        onSubmit({user:result.user,isNew})
     }
     const handleChangeStatus = () => {
         setIsRegistering(!isRegistering)

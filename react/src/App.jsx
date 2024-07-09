@@ -68,7 +68,20 @@ function App() {
   const [userData, setUserData] = useState({});
   useEffect(() => {
     socket.connect();
+    const username = localStorage.getItem('username');
+
+    if (username) {
+      socket.emit("login", { username });
+      socket.on("login", (data) => {
+        console.log("login", data)
+        if (!data.error) {
+          setUserData({ username, blocks: data.blocks });
+          dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
+        }
+      })
+    }
     return () => {
+      socket.off("login");
       socket.disconnect();
     }
   }, [])
@@ -83,17 +96,23 @@ function App() {
   const addLog = (text) => {
     setLog(prevLog => [...prevLog, text]);
   };
-  const handleSubmitUserData = async (data) => {
-    setUserData(data);
-    dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
-    socket.emit("login", { username: data.username });
-    handleChangeState("menu")
+  const handleSubmitUserData = async ({ user, isNew }) => {
+    console.log("user", user,isNew)
+    setUserData(user);
+    dispatch({ type: 'SET_BLOCKS', payload: user.blocks });
+    socket.emit("login", { username: user.username });
+    if (isNew) {
+      handleChangeState("intro");
+    } else {
+      handleChangeState("menu")
+    }
   };
   const handleCreateStrategy = async () => {
     await updateBlocks(blocks);
     handleChangeState("menu");
   }
   const handleChangeState = (newState) => {
+    console.log("handleChangeState", state,newState)
     setState(newState);
   }
   return (
@@ -102,7 +121,7 @@ function App() {
         <Register onSubmit={handleSubmitUserData} />
       )}
       {state === "menu" && (
-        <Menu onEnd={handleChangeState} />
+        <Menu onEnd={handleChangeState} username={userData.username} />
       )}
       {state === "game" && (
         <>

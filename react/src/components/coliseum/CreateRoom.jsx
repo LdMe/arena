@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import Modal from "../modal/Modal"
-const CreateRoom = ({ onCreate }) => {
+const CreateRoom = ({ onCreate, socket }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [room, setRoom] = useState({
         roomId: "",
@@ -16,10 +16,17 @@ const CreateRoom = ({ onCreate }) => {
             setError("El nombre de la arena es obligatorio");
             return;
         }
-        setIsOpen(false);
         onCreate(room);
     }
-
+    useEffect(() => {
+        socket.on("roomExists", (data) => {
+            console.log("roomExists", data)
+            setError(data.error)
+        })
+        return () => {
+            socket.off("roomExists")
+        }
+    }, [socket])
     return (
         <>
             <section className="create-room">

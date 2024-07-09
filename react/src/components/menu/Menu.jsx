@@ -1,10 +1,15 @@
 
 import './Menu.css';
-const Menu = ({ onEnd }) => {
-
+const Menu = ({ onEnd,username }) => {
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("blocks");
+        onEnd("register");
+    }
     return (
         <div className="menu-container">
-            <h1>Menú</h1>
+            <h1>{username}</h1>
             <section className="menu-grid">
                 <article className="menu-card" onClick={() => onEnd("intro")}>
                     <img src="/sprites/intro.png" alt="intro" />
@@ -21,6 +26,10 @@ const Menu = ({ onEnd }) => {
                 <article className="menu-card" onClick={() => onEnd("coliseum")}>
                     <img src="/sprites/coliseum.png" alt="coliseum" />
                     <h2>Coliseo</h2>
+                </article>
+                <article className="menu-card" onClick={handleLogout}>
+                    <img src="/sprites/deserter.png" alt="log out" />
+                    <h2>Desertar</h2>
                 </article>
             </section>
         </div>
