@@ -7,7 +7,8 @@
 .condition > select:first-child {
     width: 100%;
 }
-.condition > * {
+.condition > input,
+.condition > select {
     width: 50%;
     box-sizing: border-box;
 }

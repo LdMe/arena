@@ -47,7 +47,7 @@ const BlockEditor = ({ block, onUpdate, onCancel }) => {
             <div className="conditions">
                 <h3>Condiciones</h3>
                 {newBlock.conditions.map(condition => (
-                    <section className="condition-item">
+                    <section className="condition-item" key={condition.id}>
                         <Condition
                             key={condition.id}
                             condition={condition}
