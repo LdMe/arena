@@ -1,10 +1,12 @@
-p.error{
+.error {
     color: red;
 }
+
 .register-section {
-    height:100%;
+    height: 100%;
     display: flex;
 }
+
 /* Form Container */
 .register-form {
     background: #fff9;
@@ -14,7 +16,7 @@ p.error{
     width: 100%;
     max-width: 400px;
     box-sizing: border-box;
-    margin:auto
+    margin: auto
 }
 
 /* Form Header */
@@ -36,11 +38,13 @@ p.error{
     font-weight: bold;
     color: #555;
 }
+
 .register-buttons {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
+
 .register-form input[type="text"],
 .register-form input[type="password"] {
     padding: 10px;

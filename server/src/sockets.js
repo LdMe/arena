@@ -11,6 +11,9 @@ const createSocketServer = (server) => {
     });
     const rooms = {};
     const users = {};
+    const getPublicRooms = (rooms) => {
+        return Object.keys(rooms).filter(roomId => rooms[roomId].isPublic).map(roomId =>  rooms[roomId])
+    }
     io.on('connection', (socket) => {
         console.log('new connection', socket.id);
 
@@ -40,14 +43,14 @@ const createSocketServer = (server) => {
                 rooms[roomId].players.push({ id: socket.id, username });
                 console.log(`${username} created and joined room ${roomId}`);
                 io.to(roomId).emit('updateRoom', rooms[roomId]);
-                io.emit('updateRooms', { publicRooms: Object.keys(rooms).filter(roomId => rooms[roomId].isPublic).map(roomId =>  rooms[roomId]) });
+                io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
             } else {
                 socket.emit('roomExists', { error: 'La arena ya existe' });
             }
         });
         socket.on('getRooms', () => {
-            const publicRooms = Object.keys(rooms).filter(roomId => rooms[roomId].isPublic).map(roomId =>  rooms[roomId]);
-            socket.emit('updateRooms', { publicRooms });
+            
+            socket.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
         });
         socket.on('joinRoom', ({ roomId, role }) => {
             if (rooms[roomId]) {
@@ -68,6 +71,8 @@ const createSocketServer = (server) => {
                     rooms[roomId].spectators.push({ id: socket.id, username });
                     console.log(`${username} joined room ${roomId} as spectator`);
                 }
+
+                io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
                 io.to(roomId).emit('updateRoom', rooms[roomId]);
             } else {
                 socket.emit('roomNotFound', { error: 'No existe esta sala' });
@@ -82,7 +87,7 @@ const createSocketServer = (server) => {
                     delete rooms[roomId];
                     console.log(`room ${roomId} deleted`);
                     io.to(roomId).emit('deleteRoom', null);
-                    io.emit('updateRooms', { publicRooms: Object.keys(rooms).filter(roomId => rooms[roomId].isPublic).map(roomId =>  rooms[roomId]) });
+                    io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
                     return;
                 }
                 if (rooms[roomId].owner === socket.username || !rooms[roomId].players.some(p => p.username === rooms[roomId].owner)) {
@@ -102,9 +107,12 @@ const createSocketServer = (server) => {
                     return;
                 }
                 if(rooms[roomId].owner !== socket.username) return;
+                
                 rooms[roomId].isPlaying = true;
                 const users = rooms[roomId].players.map(p => p.username);
                 io.to(roomId).emit('startGame', users);
+
+                io.emit('updateRooms', { publicRooms: getPublicRooms(rooms) });
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 const players = await init({ usernames: users,speed}, io.to(roomId),true);
                 io.to(roomId).emit('endGame', players);

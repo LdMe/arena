@@ -124,9 +124,10 @@ const Coliseum = ({ onEnd, socket, username }) => {
                     {publicRooms.map(room => (
                         <li key={room.id}>
                             <h3>{room.id}</h3>
-                            <p>Jugadores: {room.players.length} / {room.maxPlayers}</p>
+                            <p>Jugadores: <span className={ room.players.length >= room.maxPlayers ? "error" : ""}>{room.players.length} / {room.maxPlayers}</span></p>
                             <p>Espectadores : {room.spectators?.length}</p>
-                            <button onClick={() => handleJoinRoom(room.id, "player")}>
+                            <p>Estado : {room.isPlaying ? "En juego" : "Esperando jugadores"}</p>
+                            <button disabled={room.players.length >= room.maxPlayers} onClick={() => handleJoinRoom(room.id, "player")}>
                                 Unirse
                             </button>
                             <button onClick={() => handleJoinRoom(room.id, "spectator")}>

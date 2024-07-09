@@ -20,3 +20,7 @@
     width: 100%;
     box-sizing: border-box;
 }
+
+.coliseum button:disabled {
+    opacity: 0.5;
+}
