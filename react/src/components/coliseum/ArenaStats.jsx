@@ -9,7 +9,7 @@ const ArenaStats = ({ onSubmit, disabled=false }) => {
     }
     return (
         <form onSubmit={handleSubmit}>
-            <label htmlFor="speed">Velocidad</label>
+            <label htmlFor="speed">Velocidad de simulación</label>
             <input type="range" min="0.5" max="4" name="speed" id="speed" step="0.5" value={speed} onChange={(e) => setSpeed(e.target.value)} />
             <input type="number" min="0.5" max="4" name="speed" id="speed" step="0.5" value={speed} onChange={(e) => setSpeed(e.target.value)} />
             <label htmlFor="fill">Rellenar con NPCs</label>

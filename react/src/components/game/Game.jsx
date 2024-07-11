@@ -80,7 +80,7 @@ const Game = ({ blocks, userData, onEnd, socket }) => {
                             />
                             <input type="number" name="numPlayers" id="numPlayers" min="1" max="9" step="1" value={numPlayers} onChange={e => setNumPlayers(e.target.value)} />
                         </>
-                        <label htmlFor="speed">Velocidad</label>
+                        <label htmlFor="speed">Velocidad de simulación</label>
                         <input
                             type="range"
                             name="speed"

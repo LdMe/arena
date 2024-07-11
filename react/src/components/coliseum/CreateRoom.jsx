@@ -52,6 +52,8 @@ const CreateRoom = ({ onCreate, socket }) => {
                                 type="number"
                                 name="maxPlayers"
                                 id="maxPlayers"
+                                min="2"
+                                max="9"
                                 value={room.maxPlayers}
                                 onChange={e => handleUpdateRoom("maxPlayers", e.target.value)}
                             />

@@ -19,7 +19,8 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
         }
 
         socket.on("simulationResults", (data) => {
-
+            console.log("simulation results", data)
+            gameRef.current.drawWinners(data.results.slice(0,3));
             log("Resultados de simulación: ")
             log("Media de turnos por partida: " + parseInt(data.averageTurns));
             data.results.forEach(player => log(`${player.name}: victorias: ${player.wins}, empates: ${player.draws}, derrotas: ${player.losses}`));

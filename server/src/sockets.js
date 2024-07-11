@@ -45,6 +45,9 @@ const createSocketServer = (server) => {
         socket.on('startRoom', async ({ roomId, speed, fill }) => {
             roomController.startRoom( roomId,io,socket,speed,fill);
         });
+        socket.on('stopRoom', ({ roomId }) => {
+            roomController.stopRoom( roomId);
+        });
         socket.on('startGame', async (data) => {
             try {
                 const players = await init(data, socket);
