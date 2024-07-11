@@ -5,7 +5,7 @@ import { createDefaultBlock } from './utils/condition';
 import './App.css'
 import Register from './components/register/Register';
 import Game from './components/game/Game';
-import { login, updateBlocks, getBlocks } from './utils/fetch';
+import {  updateBlocks, getUserData } from './utils/fetch';
 import socket from './utils/socket';
 import Coliseum from './components/coliseum/Coliseum';
 import Introduction from './components/intro/Intro';
@@ -46,48 +46,45 @@ function strategyReducer(state, action) {
 function App() {
   const [state, setState] = useState("register")
   const [blocks, dispatch] = useReducer(strategyReducer, []);
-  const [log, setLog] = useState([]);
-  const [playing, setPlaying] = useState(false);
   const [userData, setUserData] = useState({});
   useEffect(() => {
+    if(!userData.username) return;
     socket.connect();
-    const username = localStorage.getItem('username');
-
-    if (username) {
-      socket.emit("login", { username });
-      socket.on("login", (data) => {
-
-        if (!data.error) {
-          setUserData({ username, blocks: data.blocks });
-          dispatch({ type: 'SET_BLOCKS', payload: data.blocks });
-          if (state === "register") {
-            setState("menu");
-          }
-        }
-      })
-    }
+    socket.emit("login", { username: userData.username });
+    console.log("connected")
+    socket.on("login", (data) => {
+      console.log("login", data)
+      if (data.error) {
+        handleChangeState("register");
+      }
+    })
     return () => {
       socket.off("login");
       socket.disconnect();
     }
-  }, [])
+  }, [userData])
   useEffect(() => {
+    handleGetUserData();
+  }, [])
+  const handleGetUserData = async () => {
+    const user = await getUserData();
+    console.log("user", user)
+    if(user.error)  return handleChangeState("register");
+    setUserData(user);
+    if(state === "register") handleChangeState("menu");
+  }
+ /*  useEffect(() => {
     loadBlocks();
-  }, [state]);
+  }, [state,userData]);
   const loadBlocks = async () => {
     if(!userData.username) return;
     const newBlocks = await getBlocks();
-
     if(newBlocks.error){
       handleChangeState("register");
     }
     dispatch({ type: 'SET_BLOCKS', payload: newBlocks });
-  }
-  const addLog = (text) => {
-    setLog(prevLog => [...prevLog, text]);
-  };
+  } */
   const handleSubmitUserData = async ({ user, isNew }) => {
-
     setUserData(user);
     dispatch({ type: 'SET_BLOCKS', payload: user.blocks });
     socket.emit("login", { username: user.username });

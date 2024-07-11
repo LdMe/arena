@@ -3,6 +3,7 @@ import { createPlayers, createPlayer, getRandomPlayer } from "../gameLogic/playe
 import { generateStrategyCode } from "../utils/strategy.js";
 import userController from "./userController.js";
 
+const DEBUG = process.env.DEBUG === "true";
 async function updatePlayerStats(players, mainGameResult, simResults) {
   const { players: winners, status } = mainGameResult;
   const numSimulations = Object.values(simResults.wins)[0] + Object.values(simResults.losses)[0] + Object.values(simResults.draws)[0];
@@ -63,7 +64,9 @@ const init = async (strategy, socket = null,multiplayer=false,game = null) => {
   let log = (...args) => console.log(...args);
   if (socket) {
     log = (...args) => {
-
+      if(DEBUG){
+        console.log(...args);
+      }
       socket.emit("log", { log: [...args], players, turnsRemaining: newGame.turnsRemaining });
     };
   }

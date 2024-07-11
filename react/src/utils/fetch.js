@@ -49,8 +49,12 @@ const getBlocks = async () => {
     return result;
 }
 const updateBlocks = async (blocks) => {
-
     const result = await fetchData("/blocks", "put", blocks);
+    return result;
+}
+
+const getUserData = async () => {
+    const result = await fetchData("/user", "get");
     return result;
 }
 
@@ -59,5 +63,6 @@ export {
     login,
     register,
     getBlocks,
-    updateBlocks
+    updateBlocks,
+    getUserData
 }

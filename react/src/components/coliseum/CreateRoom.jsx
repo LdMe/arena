@@ -5,6 +5,7 @@ const CreateRoom = ({ onCreate, socket }) => {
     const [room, setRoom] = useState({
         roomId: "",
         isPublic: true,
+        role: "player",
         maxPlayers: 4
     });
     const [error, setError] = useState("");
@@ -62,6 +63,11 @@ const CreateRoom = ({ onCreate, socket }) => {
                                 checked={room.isPublic}
                                 onChange={e => handleUpdateRoom("isPublic", e.target.checked)}
                             />
+                            <label htmlFor="role">Entrar como</label>
+                            <select name="role" id="role" value={room.role} onChange={e => handleUpdateRoom("role", e.target.value)}>
+                                <option value="player">Jugador</option>
+                                <option value="spectator">Espectador</option>
+                            </select>
                             <button type="button" onClick={handleCreateRoom}>Crear arena</button>
                         </form>
                     </section>

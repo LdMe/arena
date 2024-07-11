@@ -3,12 +3,18 @@ services:
     image: mongo
     container_name: ${DB_HOST}
     restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
+
     ports:
       - ${DB_PORT}:27017
     volumes:
-      - ./data:/data/db
+      - /data/db
     networks:
       - arena-network
+    
       
     
   node:

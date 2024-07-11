@@ -58,26 +58,27 @@ const Coliseum = ({ onEnd, socket, username }) => {
             socket.emit("leaveRoom", { roomId: currentRoom?.id })
         }
     }, [])
-    const addLog = (text) => {
-        setLog(prevLog => [...prevLog, text]);
+    const updateCurrentRoom = (data) => {
+        setCurrentRoom(data)
     }
     const handleCreateRoom = (room) => {
-
+        console.log("create room", room)
         socket.emit("createRoom", room)
+        
+        updateCurrentRoom({id: room.roomId, role: room.role})
     }
-    const handleLeaveRoom = () => {
-        setPlaying(false);
-
-        if (!currentRoom) return
-        socket.emit("leaveRoom", { roomId: currentRoom.id })
-        setCurrentRoom(null);
+    const handleLeaveRoom = (error) => {
+        if(error) {
+            setError(error)
+        }
+        
+        setCurrentRoom(null)
     }
-    const handleStartRoom = (data) => {
-
-        socket.emit("startRoom",data)
-    }
+    
     const handleJoinRoom = (roomId, role = "player") => {
-        socket.emit("joinRoom", { roomId, role })
+        
+        setCurrentRoom({ id:roomId, role })
+        //socket.emit("joinRoom", { roomId, role })
     }
     const handleStopPlaying = () => {
         setPlaying(false);
@@ -86,34 +87,24 @@ const Coliseum = ({ onEnd, socket, username }) => {
         handleLeaveRoom();
         onEnd("menu");
     }
-    if (playing) {
-        return (
-            <section className="game">
-                <GameCanvas strategy={{ username }} multiplayer={true} socket={socket} log={addLog} />
-                <Log log={log} />
-                <section className="buttons">
-
-                    <button onClick={handleStopPlaying}>Volver</button>
-                </section>
-            </section>
-        )
-    }
+   
     if (currentRoom) {
         return (
             <div className="coliseum">
-                <h1>Coliseo</h1>
-                <Room room={currentRoom} username={username} handleStartRoom={handleStartRoom} handleLeaveRoom={handleLeaveRoom} />
-                
+                <Room roomData={currentRoom} socket={socket} username={username} onEnd={handleLeaveRoom} /> 
             </div>
         )
     }
     return (
         <div className="coliseum">
-            <h1>Coliseo</h1>
+            <header>
+                <h1>Coliseo</h1>
             <section className="buttons">
                 <CreateRoom onCreate={handleCreateRoom}  socket={socket}/>
                 <SearchRoom onJoin={handleJoinRoom} socket={socket} />
             </section>
+        </header>
+        <main>
             <section className="public-rooms">
                 <h2>Arenas públicas</h2>
 
@@ -125,7 +116,7 @@ const Coliseum = ({ onEnd, socket, username }) => {
                             <p>Jugadores: <span className={ room.players.length >= room.maxPlayers ? "error" : ""}>{room.players.length} / {room.maxPlayers}</span></p>
                             <p>Espectadores : {room.spectators?.length}</p>
                             <p>Estado : {room.isPlaying ? "En juego" : "Esperando jugadores"}</p>
-                            <button disabled={room.players.length >= room.maxPlayers} onClick={() => handleJoinRoom(room.id, "player")}>
+                            <button disabled={room.isPlaying || room.players.length >= room.maxPlayers} onClick={() => handleJoinRoom(room.id, "player")}>
                                 Unirse
                             </button>
                             <button onClick={() => handleJoinRoom(room.id, "spectator")}>
@@ -135,9 +126,10 @@ const Coliseum = ({ onEnd, socket, username }) => {
                     ))}
                 </ul>
             </section>
-            <section className='footer'>
+        </main>
+            <footer className='footer'>
                 <button onClick={handleGoBack}>Volver</button>
-            </section>
+            </footer>
         </div>
     )
 }

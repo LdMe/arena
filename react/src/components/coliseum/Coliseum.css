@@ -16,11 +16,60 @@
     justify-content: space-around;
     align-items: center;
     font-size: 1.2em;
-    padding: 1em;
+    padding: 0.5em;
     width: 100%;
     box-sizing: border-box;
 }
 
 .coliseum button:disabled {
     opacity: 0.5;
+}
+.coliseum {
+    max-height:90% ;
+    padding-bottom: 10%;
+}
+
+.coliseum > header{
+    height: 15%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+.coliseum > header > h1 {
+    font-size: 2em;
+    text-align: center;
+    margin: 5px;
+}
+.coliseum > header > .buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 1.2em;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+.coliseum > main {
+    height: 75%;
+    width: 100%;
+    top: 15%;
+    left: 0;
+    position: absolute;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+.coliseum > footer {
+    height: 10%;
+}
+
+.public-rooms {
+    width: 100%;
+    height: 100%;
+}
+.coliseum ul {
+    list-style-type: none;
 }

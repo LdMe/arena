@@ -39,11 +39,11 @@ const Register = ({ onSubmit }) => {
         }
         if (data.saveSession) {
             localStorage.setItem('username', data.username)
+            saveToken(result.token)
         }
         else{
             localStorage.removeItem('username')
         }
-        saveToken(result.token)
         const isNew = isRegistering;
         onSubmit({ user: result.user, isNew })
     }

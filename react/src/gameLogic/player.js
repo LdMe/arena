@@ -9,6 +9,8 @@ const colors =["amber","chartreuse","crimson","indigo","magenta","olive","periwi
 function getSprite(index){
     return "/sprites/" + colors[index]+".png";
 }
+const SPRITE_WIDTH = 128;
+const SPRITE_HEIGHT = 128;
 export class Player {
     constructor(name, health, energy, isDefending,  index) {
         this.name = name;
@@ -40,10 +42,11 @@ export class Player {
     }
 
     getSprite() {
-        const y = this.isDefending ? 0 : 512;
-        const x = actions[this.action] * 512;
-
-        return { x, y };
+        const y = this.isDefending ? 0 : SPRITE_HEIGHT;
+        const x = actions[this.action] * SPRITE_WIDTH;
+        const spriteWidth = SPRITE_WIDTH;
+        const spriteHeight = SPRITE_HEIGHT;
+        return { x, y, spriteWidth, spriteHeight };
     }
 }
 

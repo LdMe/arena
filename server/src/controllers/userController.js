@@ -32,9 +32,12 @@ const createUser = async (userData) => {
 }
 const login = async (userData) => {
     try {
-
-
+        console.log("userData", userData)
+        if (!userData.password) {
+            return { error: "Contraseña requerida", status: 400 }
+        }
         const user = await getUserByUsername(userData.username);
+        console.log("user", user)
         if (!user) {
             return { error: "Usuario no encontrado", status: 404 }
         }
@@ -61,7 +64,7 @@ const register = async (userData) => {
         if (user) {
             return { error: "El usuario ya existe", status: 409 }
         }
-        const newUser = await getOrCreateUser(userData);
+        const newUser = await createUser(userData);
         const token = jwt.sign({ _id: newUser._id, username: newUser.username }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24})
             return { user: newUser, token };
         }
@@ -70,19 +73,7 @@ const register = async (userData) => {
         return { error: e, status: 500 }
     }
 }
-const getOrCreateUser = async (userData) => {
-    try {
-        const user = await getUserByUsername(userData.username);
-        if (user) {
-            return user;
-        }
-        return await createUser(userData);
-    }
-    catch (e) {
-        console.error(e);
-        return { error: e, status: 500 }
-    }
-}
+
 
 const updateUser = async (username, userData) => {
     try {
@@ -135,7 +126,6 @@ const functions = {
     getUserByUsername,
     getById,
     createUser,
-    getOrCreateUser,
     login,
     updateUser,
     deleteUser,

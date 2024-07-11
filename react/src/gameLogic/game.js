@@ -92,8 +92,8 @@ class Game {
     this.players.forEach(player => {
 
       try{
-      const { x, y } = player.getSprite();
-      ctx.drawImage(player.image, x, y, 512, 512, player.x, player.y, player.width, player.height);
+      const { x, y,spriteWidth, spriteHeight } = player.getSprite();
+      ctx.drawImage(player.image, x, y, spriteWidth, spriteHeight, player.x, player.y, player.width, player.height);
       ctx.fillStyle = "rgba(255,255,255,0.9)";
       ctx.fillRect(player.x, player.y + player.height - 5, player.width, 60);
       ctx.fillStyle = "black";
