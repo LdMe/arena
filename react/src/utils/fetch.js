@@ -58,11 +58,17 @@ const getUserData = async () => {
     return result;
 }
 
+const getTopScores = async () => {
+    const result = await fetchData("/top-scores", "get");
+    return result;
+}
+
 export {
     fetchData,
     login,
     register,
     getBlocks,
     updateBlocks,
-    getUserData
+    getUserData,
+    getTopScores
 }

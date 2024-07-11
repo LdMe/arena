@@ -121,12 +121,13 @@ const Room = ({ roomData, socket, username, onEnd }) => {
                 ))}
             </ul>
             <p>Espectadores : {room.spectators?.length}</p>
-            {room.owner === username && !room.isPlaying &&
-                <ArenaStats onSubmit={handleStart} disabled={room.players.length < 2} />
-            }
+            
             <p>{username} : {getRole(username) === "player" ? "Jugador" : "Espectador"}</p>
             {room.isPlaying ? <button onClick={() => setPlaying(true)}>Ver partida</button> : <p>Esperando jugadores...</p>}
             {!room.isPlaying && <button onClick={handleChangeRole}>{getRole(username) === "player" ? "Entrar como espectador" : "Entrar como jugador"}</button>}
+            {room.owner === username && !room.isPlaying &&
+                <ArenaStats onSubmit={handleStart} disabled={room.players.length < 2} />
+            }
             <section className="footer">
                 
                 <button onClick={handleLeaveRoom}>Abandonar</button>

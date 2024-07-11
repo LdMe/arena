@@ -9,7 +9,7 @@ import {  updateBlocks, getUserData } from './utils/fetch';
 import socket from './utils/socket';
 import Coliseum from './components/coliseum/Coliseum';
 import Introduction from './components/intro/Intro';
-
+import Scores from './components/scores/Scores';
 // Reducer para manejar el estado complejo
 function strategyReducer(state, action) {
   switch (action.type) {
@@ -125,6 +125,9 @@ function App() {
       )}
       {state === "intro" && (
         <Introduction onEnd={handleChangeState} />
+      )}
+      {state === "scores" && (
+        <Scores onEnd={handleChangeState} />
       )}
       {state === "builder" && (
         <div className="builder">

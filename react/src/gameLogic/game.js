@@ -9,7 +9,9 @@ class Game {
     this.background = new Image();
     this.multiplayer = multiplayer
     this.background.src = multiplayer ? "/sprites/background.png": "/sprites/background_train.png";
-    this.loaded = false;
+    this.loadedPromise = new Promise(resolve => {
+      this.onLoad = resolve;
+    })
     this.background.onload = () => {
       this.onLoadPlayers();
     }
@@ -19,8 +21,8 @@ class Game {
     for (const player of this.players) {
       await player.onLoad;
     }
-    this.loaded = true;
     this.draw();
+    this.onLoad();
   }
   shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {

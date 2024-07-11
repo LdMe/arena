@@ -13,11 +13,13 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
         }
         if(!started){
             setStarted(true);
-            if(!multiplayer){
+            if(!multiplayer && socket){
                 socket.emit("startGame",strategy);
             }
         }
-
+        if(!socket){
+            return;
+        }
         socket.on("simulationResults", (data) => {
             console.log("simulation results", data)
             gameRef.current.drawWinners(data.results.slice(0,3));
@@ -59,7 +61,9 @@ const GameCanvas = ({ strategy,socket,log,multiplayer=false}) => {
     }, [strategy,canvasRef.current,started]);
     useEffect(() => {
         return() => {
-            socket.emit("stopGame");
+            if(socket){
+                socket.emit("stopGame");
+            }
         }
     },[])
     

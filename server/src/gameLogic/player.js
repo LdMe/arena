@@ -109,7 +109,7 @@ function getRandomPlayers(log, numPlayers) {
 async function getRandomPlayersFromDb(log, numPlayers, excludedUsername) {
     // get a random list of players, excluding the specified user
     const users = await userModel.aggregate([
-        { $match: { username: { $ne: excludedUsername }, won: { $gt: 0 }, draw: { $gt: 0 } } }, // exclude the specified user
+        { $match: { username: { $ne: excludedUsername }, wins: { $gt: 0 }, draw: { $gt: 0 } } }, // exclude the specified user
         { $sample: { size: parseInt(numPlayers) } }
     ]);
 
@@ -125,7 +125,7 @@ async function getRandomPlayersFromDb(log, numPlayers, excludedUsername) {
 }
 async function getBestPlayers(log, numPlayers, excludedUsername) {
     // get the players with the most wins, and draws
-    const users = await userModel.find({ username: { $ne: excludedUsername }, won: { $gt: 0 }, draw: { $gt: 0 } }).sort({ won: -1, draw: -1 }).limit(numPlayers);
+    const users = await userModel.find({ username: { $ne: excludedUsername }, wins: { $gt: 0 }, draw: { $gt: 0 } }).sort({ wins: -1, draw: -1 }).limit(numPlayers);
     const players = users.map((user) => new Player(user.username, MAX_HEALTH, MAX_ENERGY, false, generateStrategyCode(user.blocks, true), log));
 
 

@@ -66,5 +66,16 @@ router.put("/blocks", isAuthenticated,async (req, res) => {
         return res.status(500).json({ error: e });
     }
 })
+router.get("/top-scores", async (req, res) => {
+    try {
+        const topScores = await userController.getTopScores();
+        if (topScores) {
+            return res.json(topScores);
+        }
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: e });
+    }
+})
 
 export default router

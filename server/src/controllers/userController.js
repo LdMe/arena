@@ -121,7 +121,21 @@ const deleteUser = async (username) => {
         return { error: e }
     }
 }
-
+const getTopScores = async () => {
+    try {
+        return await user.find({
+            $or: [
+                { wins: { $gt: 0 } },
+                { draws: { $gt: 0 } },
+                { losses: { $gt: 0 } }
+            ]
+        }).sort({ wins: -1, draws: -1, losses: 1 }).limit(10).select({ username: 1, wins: 1, draws: 1, losses: 1 });
+    }
+    catch (e) {
+        console.error(e);
+        return { error: e }
+    }
+}
 const functions = {
     getUserByUsername,
     getById,
@@ -131,6 +145,7 @@ const functions = {
     deleteUser,
     getBlocks,
     updateBlocks,
-    register
+    register,
+    getTopScores
 }
 export default functions

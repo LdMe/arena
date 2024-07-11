@@ -26,6 +26,10 @@ const Menu = ({ onEnd,username }) => {
                     <img src="/sprites/coliseum.png" alt="coliseum" />
                     <h2>Coliseo</h2>
                 </article>
+                <article className="menu-card" onClick={() => onEnd("scores")}>
+                    <img src="/sprites/scores.png" alt="scores" />
+                    <h2>Puntuaciones</h2>
+                </article>
                 <article className="menu-card" onClick={handleLogout}>
                     <img src="/sprites/deserter.png" alt="log out" />
                     <h2>Desertar</h2>

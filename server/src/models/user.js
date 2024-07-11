@@ -40,15 +40,15 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    won: {
+    wins: {
         type: Number,
         default: 0
     },
-    lost: {
+    losses: {
         type: Number,
         default: 0
     },
-    draw: {
+    draws: {
         type: Number,
         default: 0
     }

@@ -1,0 +1,17 @@
+
+.scores{
+    overflow-y: auto;
+    height:50%;
+    width: 100%;
+}
+.scores h2{
+    margin-top:0;
+}
+.game {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}

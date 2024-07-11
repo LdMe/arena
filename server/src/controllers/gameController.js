@@ -14,9 +14,9 @@ async function updatePlayerStats(players, mainGameResult, simResults) {
 
     const newData = {
       totalGames: dbPlayer.totalGames + 1 + numSimulations,
-      won: dbPlayer.won + (status === "win" && winners[0].name === player.name ? 1 : 0) + simResults.wins[player.name],
-      lost: dbPlayer.lost + (status !== "draw" && !winners.some(w => w.name === player.name) ? 1 : 0) + simResults.losses[player.name],
-      draw: dbPlayer.draw + (status === "draw" ? 1 : 0) + simResults.draws[player.name]
+      wins: dbPlayer.wins + (status === "win" && winners[0].name === player.name ? 1 : 0) + simResults.wins[player.name],
+      losses: dbPlayer.losses + (status !== "draw" && !winners.some(w => w.name === player.name) ? 1 : 0) + simResults.losses[player.name],
+      draws: dbPlayer.draws + (status === "draw" ? 1 : 0) + simResults.draws[player.name]
     };
 
     await userController.updateUser(player.name, newData);
@@ -93,7 +93,7 @@ const init = async (strategy, socket = null,multiplayer=false,game = null) => {
 
     }
     players = await createPlayers(log, strategy.difficulty, strategy.numPlayers, strategy.username);
-    
+    console.log("strategy", strategy)
     const newPlayer = createPlayer(strategy.username, generateStrategyCode(strategy.blocks, true), log);
 
     players.push(newPlayer);
