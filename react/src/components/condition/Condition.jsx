@@ -39,7 +39,6 @@ function ComparisonCondition({ condition, updateCondition }) {
                 <option value="minHp">Gladiador con menos vida</option>
                 <option value="maxEnergy">Gladiador con más energía</option>
                 <option value="minEnergy">Gladiador con menos energía</option>
-                <option value="random">Gladiador aleatorio</option>
                 <option value="randomNumber">Número aleatorio</option>
                 <option value="gladiatorCount">Conteo de Gladiadores</option>
             </select>
